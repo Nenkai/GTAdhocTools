@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "GTAdhocParser": {
+      "commandName": "Project",
+      "commandLineArgs": "\"C:\\Gran_Turismo\\GT6\\PS3_GAME\\USRDIR\\PDIPFS_EXTRACTED\\projects\\gt6\\arcade\\arcade.mpackage\""
+    }
+  }
+}
