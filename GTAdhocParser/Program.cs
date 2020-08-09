@@ -7,12 +7,8 @@ namespace GTAdhocParser
     {
         static void Main(string[] args)
         {
-            /*var adc = Adhoc.ReadFromFile(args[0]);
-            adc.PrintAll(Path.GetFileNameWithoutExtension(args[0]) + ".txt");
-            adc.PrintData(Path.GetFileNameWithoutExtension(args[0]) + ".bin");
-            */
-
-            //AdhocPackage.ReadPackage(args[0]);
+            var adc = AdhocFile.ReadFromFile(args[0]);
+            adc.Disassemble(Path.GetFileNameWithoutExtension(args[0]) + ".ad");
         }
     }
 }
