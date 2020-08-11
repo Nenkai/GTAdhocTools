@@ -22,9 +22,8 @@ namespace GTAdhocParser.Instructions
             ImportNames = Utils.ReadADCStringTable(parent, ref sr);
             Unk2 = Utils.ReadADCString(parent, ref sr);
 
-
-            // if version > 9
-            Unk3 = Utils.ReadADCString(parent, ref sr);
+            if (parent.Version > 9)
+                Unk3 = Utils.ReadADCString(parent, ref sr);
         }
 
         public override string ToString()

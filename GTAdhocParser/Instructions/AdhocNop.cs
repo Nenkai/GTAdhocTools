@@ -6,25 +6,21 @@ using System.Threading.Tasks;
 
 using Syroot.BinaryData.Memory;
 
+using GTAdhocParser;
+
 namespace GTAdhocParser.Instructions
 {
-    public class OpCall : InstructionBase
+    // Used for version <= 6?
+    public class OpNop : InstructionBase
     {
-        public AdhocCallType CallType { get; set; } = AdhocCallType.CALL;
- 
-        public uint Value;
+        public AdhocCallType CallType { get; set; } = AdhocCallType.NOP;
 
         public override void Deserialize(AdhocFile parent, ref SpanReader sr)
         {
-            Value = sr.ReadUInt32();
+
         }
 
         public override string ToString()
-           => $"{CallType}: Value={Value}";
-
-        public void Decompile(CodeBuilder builder)
-        {
-            throw new NotImplementedException();
-        }
+           => CallType.ToString();
     }
 }

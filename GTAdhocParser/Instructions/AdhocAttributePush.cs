@@ -17,20 +17,14 @@ namespace GTAdhocParser.Instructions
 
         public override void Deserialize(AdhocFile parent, ref SpanReader sr)
         {
-            /*
-            if ((int)param_2->adcVersionCurrent < 6)
+            if (parent.Version <= 5)
             {
-                iVar1 = FUN_00a1e998();
-                HStreamReader::ReadAdhocEntryData(param_2, acStack56);
-                FUN_00a30e18(auStack60, acStack56);
-                FUN_00a426c8(auStack52, auStack60);
-                FUN_00a42778((ulonglong)(param_1 + 4), auStack52);
-                FUN_00a41fc8(auStack52);
-                FUN_00a3173c(auStack60);
-                DisposeObject(&DAT_fffffff4 + iVar1 + 0xc, auStack64);
+                string attrName = Utils.ReadADCString(parent, ref sr);
+                Attributes = new List<string>(1);
+                Attributes.Add(attrName);
             }
-            * else */
-            Attributes = Utils.ReadADCStringTable(parent, ref sr);
+            else
+                Attributes = Utils.ReadADCStringTable(parent, ref sr);
         }
 
         public override string ToString()

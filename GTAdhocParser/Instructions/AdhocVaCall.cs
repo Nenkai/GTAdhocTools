@@ -8,9 +8,9 @@ using Syroot.BinaryData.Memory;
 
 namespace GTAdhocParser.Instructions
 {
-    public class OpCall : InstructionBase
+    public class OpVaCall : InstructionBase
     {
-        public AdhocCallType CallType { get; set; } = AdhocCallType.CALL;
+        public AdhocCallType CallType { get; set; } = AdhocCallType.VA_CALL;
  
         public uint Value;
 

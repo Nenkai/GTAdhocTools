@@ -25,17 +25,13 @@ namespace GTAdhocParser
 
         public static List<string> ReadADCStringTable(AdhocFile parent, ref SpanReader sr)
         {
-            // if version < 9..
-            // read from continuous data
-            // else parse from string table..
-
             uint strCount = sr.ReadUInt32();
             List<string> list = new List<string>((int)strCount);
 
             for (int i = 0; i < strCount; i++)
             {
-                uint strTableIndex = (uint)sr.DecodeBitsAndAdvance();
-                list.Add(parent.StringTable[strTableIndex]);
+                string str = ReadADCString(parent, ref sr);
+                list.Add(str);
             }
 
             return list;
@@ -43,12 +39,16 @@ namespace GTAdhocParser
 
         public static string ReadADCString(AdhocFile parent, ref SpanReader sr)
         {
-            // if version < 9..
-            // read from continuous data
-            // else parse from string table..
-
-            uint strTableIndex = (uint)sr.DecodeBitsAndAdvance();
-            return parent.StringTable[strTableIndex];
+            if (parent.Version <= 8)
+            {
+                ushort strLen = sr.ReadUInt16();
+                return sr.ReadStringRaw((int)strLen);
+            }
+            else
+            {
+                uint strTableIndex = (uint)sr.DecodeBitsAndAdvance();
+                return parent.StringTable[strTableIndex];
+            }
         }
     }
 }

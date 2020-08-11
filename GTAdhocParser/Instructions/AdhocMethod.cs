@@ -23,10 +23,7 @@ namespace GTAdhocParser.Instructions
         public override void Deserialize(AdhocFile parent, ref SpanReader sr)
         {
             if (CallType != AdhocCallType.METHOD_CONST && CallType != AdhocCallType.FUNCTION_CONST)
-            {
-                ulong v = sr.DecodeBitsAndAdvance();
-                MethodName = parent.StringTable[v];
-            }
+                MethodName = Utils.ReadADCString(parent, ref sr);
 
             Code = new AdhocCode();
             Code.Deserialize(parent, ref sr);

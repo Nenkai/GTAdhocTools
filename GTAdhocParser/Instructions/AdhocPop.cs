@@ -19,7 +19,7 @@ namespace GTAdhocParser.Instructions
         }
 
         public override string ToString()
-            => $"{CallType}";
+            => CallType.ToString();
 
         public void Decompile(CodeBuilder builder)
         {

@@ -22,57 +22,78 @@ namespace GTAdhocParser
         /// The first argument is always "self", if declaring a class method.
         /// </summary>
         public List<(string argumentName, uint argumentIndex)> Arguments = new List<(string, uint)>();
+
+
         public List<string> unkStr2 = new List<string>();
 
+
+        public List<string> oldVersListUnk = new List<string>();
+
         public string OriginalSourceFile { get; set; }
+        public byte CodeVersion { get; set; }
 
         public override void Deserialize(AdhocFile parent, ref SpanReader sr)
         {
-            sr.ReadByte();
-            uint dataVersion = sr.ReadByte();
-
-            uint fileNameIndex = (uint)sr.DecodeBitsAndAdvance(); // vers > 9
-            OriginalSourceFile = parent.StringTable[fileNameIndex];
-
-            byte unk = sr.ReadByte(); // vers > 12
-            uint argCount = sr.ReadUInt32();
-
-            if (argCount > 0)
+            if (parent.Version < 8)
             {
-                for (int i = 0; i < argCount; i++)
+                OriginalSourceFile = Utils.ReadADCString(parent, ref sr);
+
+                if (parent.Version > 3)
                 {
-                    string argName = Utils.ReadADCString(parent, ref sr);
-                    Arguments.Add((argName, sr.ReadUInt32()));
+                    uint unkCount = sr.ReadUInt32();
+                    for (int i = 0; i < unkCount; i++)
+                        oldVersListUnk.Add(Utils.ReadADCString(parent, ref sr));
                 }
-            }
-
-            uint unkCount2 = sr.ReadUInt32();
-            if (unkCount2 > 0)
-            {
-                for (int i = 0; i < unkCount2; i++)
-                {
-                    string u = Utils.ReadADCString(parent, ref sr);
-                    unkStr2.Add(u);
-                    sr.ReadUInt32();
-                }
-            }
-
-            uint unkCount3 = sr.ReadUInt32();
-
-            /*
-            if ((int)codeStream->adcVersionCurrent < 0xb)
-            {
-                ReadInt32(codeStream, uVar5 + 0x34 & 0xffffffff);
-                ReadInt32(codeStream, uVar5 + 0x30 & 0xffffffff);
-                param_1->field_0x38 = param_1->field_0x34;
             }
             else
             {
-            */
+                sr.ReadByte();
+                CodeVersion = sr.ReadByte();
 
-            uint unkCount4 = sr.ReadUInt32();
-            uint unkCount5 = sr.ReadUInt32();
-            uint unkCount6 = sr.ReadUInt32();
+                OriginalSourceFile = Utils.ReadADCString(parent, ref sr);
+
+                if (parent.Version >= 12)
+                {
+                    byte unk = sr.ReadByte();
+                }
+
+                uint argCount = sr.ReadUInt32();
+
+                if (argCount > 0)
+                {
+                    for (int i = 0; i < argCount; i++)
+                    {
+                        string argName = Utils.ReadADCString(parent, ref sr);
+                        Arguments.Add((argName, sr.ReadUInt32()));
+                    }
+                }
+
+                uint unkCount2 = sr.ReadUInt32();
+                if (unkCount2 > 0)
+                {
+                    for (int i = 0; i < unkCount2; i++)
+                    {
+                        string u = Utils.ReadADCString(parent, ref sr);
+                        unkStr2.Add(u);
+                        sr.ReadUInt32();
+                    }
+                }
+
+                uint unkCount3 = sr.ReadUInt32();
+            }
+
+            if (parent.Version <= 10)
+            {
+                uint unkCount4 = sr.ReadUInt32();
+                uint unkCount5 = sr.ReadUInt32();
+            }
+            else
+            {
+
+                uint unkCount4 = sr.ReadUInt32();
+                uint unkCount5 = sr.ReadUInt32();
+                uint unkCount6 = sr.ReadUInt32();
+            }
 
             uint instructionCount = sr.ReadUInt32();
             if (instructionCount < 0x40000000)
@@ -114,6 +135,8 @@ namespace GTAdhocParser
                     return new OpVariableEval();
                 case AdhocCallType.CALL:
                     return new OpCall();
+                case AdhocCallType.CALL_OLD:
+                    return new OpCall() { CallType = type };
                 case AdhocCallType.JUMP_IF_FALSE:
                     return new OpJumpIfFalse();
                 case AdhocCallType.FLOAT_CONST:
@@ -182,6 +205,8 @@ namespace GTAdhocParser
                     return new OpElementPush();
                 case AdhocCallType.MAP_CONST:
                     return new OpMapConst();
+                case AdhocCallType.MAP_CONST_OLD:
+                    return new OpMapConstOld();
                 case AdhocCallType.MAP_INSERT:
                     return new OpMapInsert();
                 case AdhocCallType.UNARY_OPERATOR:
@@ -208,6 +233,8 @@ namespace GTAdhocParser
                     return new OpUndef();
                 case AdhocCallType.TRY_CATCH:
                     return new OpTryCatch();
+                case AdhocCallType.THROW:
+                    return new OpThrow();
                 case AdhocCallType.ASSIGN:
                     return new OpAssign();
                 case AdhocCallType.ASSIGN_OLD:
@@ -218,6 +245,14 @@ namespace GTAdhocParser
                     return new OpRequire();
                 case AdhocCallType.U_LONG_CONST:
                     return new OpULongConst();
+                case AdhocCallType.PRINT:
+                    return new OpPrint();
+                case AdhocCallType.MODULE_CONSTRUCTOR:
+                    return new OpModuleCtor();
+                case AdhocCallType.VA_CALL:
+                    return new OpVaCall();
+                case AdhocCallType.NOP:
+                    return new OpNop();
                 default:
                     throw new Exception($"Encountered unimplemented {type} instruction.");
             }

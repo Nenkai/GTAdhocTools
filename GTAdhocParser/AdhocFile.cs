@@ -38,7 +38,9 @@ namespace GTAdhocParser
             sr.ReadByte();
             var adc = new AdhocFile(version);
 
-            adc.ParseStringTable(ref sr);
+            if (adc.Version >= 8)
+                adc.ParseStringTable(ref sr);
+
             adc.ParentCode = new AdhocCode();
             adc.ParentCode.Deserialize(adc, ref sr);
 
@@ -78,7 +80,10 @@ namespace GTAdhocParser
             if (!string.IsNullOrEmpty(ParentCode.OriginalSourceFile))
                 sw.WriteLine($"Original File Name: {ParentCode.OriginalSourceFile}");
 
-            sw.WriteLine($"Version: {Version} ({StringTable.Length} strings)");
+            sw.Write($"Version: {Version}");
+            if (StringTable != null)
+                sw.Write($"{StringTable.Length} strings)");
+            sw.WriteLine();
 
             var d = new CodeBuilder();
             for (var i = 0; i < ParentCode.Components.Count; i++)
