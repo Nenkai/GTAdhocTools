@@ -8,19 +8,24 @@ using Syroot.BinaryData.Memory;
 
 namespace GTAdhocParser.Instructions
 {
-    public class OpLogicalOr : IAdhocInstruction
+    public class OpLogicalAnd : InstructionBase
     {
         public AdhocCallType CallType { get; set; } = AdhocCallType.LOGICAL_OR;
-        public uint Unknown { get; set; }
+        
 
         public uint Value;
 
-        public void Deserialize(AdhocFile parent, ref SpanReader sr)
+        public override void Deserialize(AdhocFile parent, ref SpanReader sr)
         {
             Value = sr.ReadUInt32();
         }
 
         public override string ToString()
-           => $"{Unknown, 4}| {CallType}: Value={Value}";
+           => $"{CallType}: Value={Value}";
+
+        public void Decompile(CodeBuilder builder)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

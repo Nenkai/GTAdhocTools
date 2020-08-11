@@ -8,21 +8,26 @@ using Syroot.BinaryData.Memory;
 
 namespace GTAdhocParser.Instructions
 {
-    public class OpVariablePush : IAdhocInstruction
+    public class OpVariablePush : InstructionBase
     {
         public AdhocCallType CallType { get; set; } = AdhocCallType.VARIABLE_PUSH;
-        public uint Unknown { get; set; }
+        
 
         public List<string> Names { get; set; }
         public uint Value { get; set; }
 
-        public void Deserialize(AdhocFile parent, ref SpanReader sr)
+        public override void Deserialize(AdhocFile parent, ref SpanReader sr)
         {
             Names = Utils.ReadADCStringTable(parent, ref sr);
             Value = sr.ReadUInt32();
         }
 
         public override string ToString()
-            => $"{Unknown, 4}| {CallType}: {string.Join(',', Names)}, Value={Value}";
+            => $"{CallType}: {string.Join(',', Names)}, Value={Value}";
+
+        public void Decompile(CodeBuilder builder)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

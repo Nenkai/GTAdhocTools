@@ -8,14 +8,14 @@ using Syroot.BinaryData.Memory;
 
 namespace GTAdhocParser.Instructions
 {
-    public class OpAttributePush : IAdhocInstruction
+    public class OpAttributePush : InstructionBase
     {
         public AdhocCallType CallType { get; set; } = AdhocCallType.ATTRIBUTE_PUSH;
-        public uint Unknown { get; set; }
+        
 
         public List<string> Attributes;
 
-        public void Deserialize(AdhocFile parent, ref SpanReader sr)
+        public override void Deserialize(AdhocFile parent, ref SpanReader sr)
         {
             /*
             if ((int)param_2->adcVersionCurrent < 6)
@@ -34,6 +34,11 @@ namespace GTAdhocParser.Instructions
         }
 
         public override string ToString()
-           => $"{Unknown, 4}| {CallType}: Attributes={string.Join(',', Attributes)}";
+           => $"{CallType}: Attributes={string.Join(',', Attributes)}";
+
+        public void Decompile(CodeBuilder builder)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

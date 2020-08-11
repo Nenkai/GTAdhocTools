@@ -8,11 +8,10 @@ using Syroot.BinaryData.Memory;
 
 namespace GTAdhocParser.Instructions
 {
-    public class OpObjectSelector : InstructionBase
+    public class OpAssign : InstructionBase
     {
-        public AdhocCallType CallType { get; set; } = AdhocCallType.OBJECT_SELECTOR;
+        public AdhocCallType CallType { get; set; } = AdhocCallType.ASSIGN;
         
-
         public override void Deserialize(AdhocFile parent, ref SpanReader sr)
         {
 

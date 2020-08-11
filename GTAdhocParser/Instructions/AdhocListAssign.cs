@@ -8,14 +8,14 @@ using Syroot.BinaryData.Memory;
 
 namespace GTAdhocParser.Instructions
 {
-    public class OpListAssign : IAdhocInstruction
+    public class OpListAssign : InstructionBase
     {
         public AdhocCallType CallType { get; set; } = AdhocCallType.LIST_ASSIGN;
-        public uint Unknown { get; set; }
+        
 
         public uint Unk { get; set; }
 
-        public void Deserialize(AdhocFile parent, ref SpanReader sr)
+        public override void Deserialize(AdhocFile parent, ref SpanReader sr)
         {
             Unk = sr.ReadUInt32();
             if (parent.Version > 11)
@@ -30,6 +30,11 @@ namespace GTAdhocParser.Instructions
         }
 
         public override string ToString()
-           => $"{Unknown,4}| {CallType}: Unk={Unk}";
+           => $"{LineNumber,4}| {CallType}: Unk={Unk}";
+
+        public void Decompile(CodeBuilder builder)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

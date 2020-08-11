@@ -8,18 +8,18 @@ using Syroot.BinaryData.Memory;
 
 namespace GTAdhocParser.Instructions
 {
-    public class OpImport : IAdhocInstruction
+    public class OpImport : InstructionBase
     {
         public AdhocCallType CallType { get; set; } = AdhocCallType.IMPORT;
-        public uint Unknown { get; set; }
+        
 
-        public List<string> Unk { get; set; }
+        public List<string> ImportNames { get; set; }
         public string Unk2;
         public string Unk3;
 
-        public void Deserialize(AdhocFile parent, ref SpanReader sr)
+        public override void Deserialize(AdhocFile parent, ref SpanReader sr)
         {
-            Unk = Utils.ReadADCStringTable(parent, ref sr);
+            ImportNames = Utils.ReadADCStringTable(parent, ref sr);
             Unk2 = Utils.ReadADCString(parent, ref sr);
 
 
@@ -28,6 +28,11 @@ namespace GTAdhocParser.Instructions
         }
 
         public override string ToString()
-            => $"{Unknown, 4}| {CallType}: {string.Join(',', Unk)}, Unk2={Unk2}, Unk3={Unk3}";
+            => $"{CallType}: {ImportNames[^1]}, Unk2={Unk2}, Unk3={Unk3}";
+
+        public void Decompile(CodeBuilder builder)
+        {
+            builder.AppendLine($"import {ImportNames[^1]}");
+        }
     }
 }

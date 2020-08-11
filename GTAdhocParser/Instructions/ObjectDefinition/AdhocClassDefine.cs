@@ -8,23 +8,23 @@ using Syroot.BinaryData.Memory;
 
 namespace GTAdhocParser.Instructions
 {
-    public class OpClassDefine : IAdhocInstruction
+    public class OpClassDefine : InstructionBase
     {
         public AdhocCallType CallType { get; set; } = AdhocCallType.CLASS_DEFINE;
-        public uint Unknown { get; set; }
+        
 
         public string ClassName { get; set; }
         public List<string> ExtendsFrom { get; set; }
-        public void Deserialize(AdhocFile parent, ref SpanReader sr)
+        public override void Deserialize(AdhocFile parent, ref SpanReader sr)
         {
             ClassName = Utils.ReadADCString(parent, ref sr);
             ExtendsFrom = Utils.ReadADCStringTable(parent, ref sr);
         }
 
         public override string ToString()
-            => $"{Unknown, 4}| {CallType}: {ClassName} extends {ExtendsFrom[^1]}";
+            => $"{CallType}: {ClassName} extends {ExtendsFrom[^1]}";
 
-        public void GetHumanCode(CodeBuilder builder)
+        public void Decompile(CodeBuilder builder)
         {
             builder.AppendLine($"class {ClassName} : {ExtendsFrom[^1]}");
             builder.AppendLine("{");

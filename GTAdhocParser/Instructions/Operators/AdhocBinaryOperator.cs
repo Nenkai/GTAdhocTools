@@ -8,13 +8,13 @@ using Syroot.BinaryData.Memory;
 
 namespace GTAdhocParser.Instructions
 {
-    public class OpUnaryOperator : IAdhocInstruction
+    public class OpBinaryOperator : InstructionBase
     {
-        public AdhocCallType CallType { get; set; } = AdhocCallType.UNARY_OPERATOR;
-        public uint Unknown { get; set; }
+        public AdhocCallType CallType { get; set; } = AdhocCallType.BINARY_OPERATOR;
+        
 
         public string Name { get; set; }
-        public void Deserialize(AdhocFile parent, ref SpanReader sr)
+        public override void Deserialize(AdhocFile parent, ref SpanReader sr)
         {
             Name = Utils.ReadADCString(parent, ref sr);
         }
@@ -89,7 +89,13 @@ namespace GTAdhocParser.Instructions
                     return @operator;
             }
         }
+
         public override string ToString()
-            => $"{Unknown, 4}| {CallType}: {OpBinaryOperator.GetHumanReadable(Name)} ({Name})";
+            => $"{CallType}: {GetHumanReadable(Name)} ({Name})";
+
+        public void Decompile(CodeBuilder builder)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

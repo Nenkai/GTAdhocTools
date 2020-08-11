@@ -8,19 +8,24 @@ using Syroot.BinaryData.Memory;
 
 namespace GTAdhocParser.Instructions
 {
-    public class OpJumpIfTrue : IAdhocInstruction
+    public class OpJumpIfTrue : InstructionBase
     {
         public AdhocCallType CallType { get; set; } = AdhocCallType.JUMP_IF_TRUE;
-        public uint Unknown { get; set; }
+        
 
         public uint InstructionIndex { get; set; }
 
-        public void Deserialize(AdhocFile parent, ref SpanReader sr)
+        public override void Deserialize(AdhocFile parent, ref SpanReader sr)
         {
             InstructionIndex = sr.ReadUInt32();
         }
 
         public override string ToString()
-           => $"{Unknown, 4}| {CallType}: Jump To Instruction {InstructionIndex}";
+           => $"{CallType}: Jump To Instruction {InstructionIndex}";
+
+        public void Decompile(CodeBuilder builder)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

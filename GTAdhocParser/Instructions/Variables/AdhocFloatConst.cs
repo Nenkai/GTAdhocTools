@@ -8,19 +8,24 @@ using Syroot.BinaryData.Memory;
 
 namespace GTAdhocParser.Instructions
 {
-    public class OpFloatConst : IAdhocInstruction
+    public class OpFloatConst : InstructionBase
     {
         public AdhocCallType CallType { get; set; } = AdhocCallType.FLOAT_CONST;
-        public uint Unknown { get; set; }
+        
 
         public float Value;
 
-        public void Deserialize(AdhocFile parent, ref SpanReader sr)
+        public override void Deserialize(AdhocFile parent, ref SpanReader sr)
         {
             Value = sr.ReadSingle(); // Game reads it as uint, we read it as float.
         }
 
         public override string ToString()
-           => $"{Unknown, 4}| {CallType}: Value={Value}";
+           => $"{CallType}: Value={Value}";
+
+        public void Decompile(CodeBuilder builder)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -10,18 +10,23 @@ using GTAdhocParser;
 
 namespace GTAdhocParser.Instructions
 {
-    public class OpMethod : IAdhocInstruction
+    public class OpMethod : InstructionBase
     {
         public AdhocCallType CallType { get; set; } = AdhocCallType.METHOD_DEFINE;
-        public uint Unknown { get; set; }
+
+        public OpMethod(AdhocCallType callType)
+            => CallType = callType;
 
         public string MethodName;
         public AdhocCode Code;
 
-        public void Deserialize(AdhocFile parent, ref SpanReader sr)
+        public override void Deserialize(AdhocFile parent, ref SpanReader sr)
         {
-            ulong v = sr.DecodeBitsAndAdvance();
-            MethodName = parent.StringTable[v];
+            if (CallType != AdhocCallType.METHOD_CONST && CallType != AdhocCallType.FUNCTION_CONST)
+            {
+                ulong v = sr.DecodeBitsAndAdvance();
+                MethodName = parent.StringTable[v];
+            }
 
             Code = new AdhocCode();
             Code.Deserialize(parent, ref sr);
@@ -30,8 +35,7 @@ namespace GTAdhocParser.Instructions
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.AppendLine();
-            sb.Append($"{Unknown, 4}| ").Append(CallType.ToString()).Append(" - ").Append(MethodName);
+            sb.Append(CallType.ToString()).Append(" - ").Append(MethodName);
             if (Code.Arguments.Count != 0)
             {
                 sb.Append(" (");
@@ -44,12 +48,12 @@ namespace GTAdhocParser.Instructions
                 sb.Append(')');
             }
 
-            sb.AppendLine();
-
-            foreach (var comp in Code.Components)
-                sb.Append("   ").AppendLine(comp.ToString());
-
             return sb.ToString();
+        }
+
+        public void Decompile(CodeBuilder builder)
+        {
+            throw new NotImplementedException();
         }
     }
 }

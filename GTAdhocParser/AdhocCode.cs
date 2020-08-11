@@ -10,20 +10,23 @@ using GTAdhocParser.Instructions;
 
 namespace GTAdhocParser
 {
-    public class AdhocCode : IAdhocInstruction
+    public class AdhocCode : InstructionBase
     {
         private byte[] _buffer;
         public AdhocCallType CallType { get; set; } = AdhocCallType.METHOD_DEFINE;
-        public uint Unknown { get; set; }
 
-        public List<IAdhocInstruction> Components = new List<IAdhocInstruction>();
+        public List<InstructionBase> Components = new List<InstructionBase>();
 
-        public List<(string, uint)> Arguments = new List<(string, uint)>();
+        /// <summary>
+        /// Arguments if the current component is a function call.
+        /// The first argument is always "self", if declaring a class method.
+        /// </summary>
+        public List<(string argumentName, uint argumentIndex)> Arguments = new List<(string, uint)>();
         public List<string> unkStr2 = new List<string>();
 
         public string OriginalSourceFile { get; set; }
 
-        public void Deserialize(AdhocFile parent, ref SpanReader sr)
+        public override void Deserialize(AdhocFile parent, ref SpanReader sr)
         {
             sr.ReadByte();
             uint dataVersion = sr.ReadByte();
@@ -65,10 +68,7 @@ namespace GTAdhocParser
             }
             else
             {
-                ReadInt32(codeStream, uVar5 + 0x30 & 0xffffffff);
-                ReadInt32(codeStream, uVar5 + 0x34 & 0xffffffff);
-                ReadInt32(codeStream, uVar5 + 0x38 & 0xffffffff);
-            }*/
+            */
 
             uint unkCount4 = sr.ReadUInt32();
             uint unkCount5 = sr.ReadUInt32();
@@ -87,25 +87,29 @@ namespace GTAdhocParser
             }
         }
 
-        public void ReadComponent(AdhocFile parent, uint unk, AdhocCallType type, ref SpanReader sr)
+        public void ReadComponent(AdhocFile parent, uint lineNumber, AdhocCallType type, ref SpanReader sr)
         {
-            IAdhocInstruction component = GetByType(type);
+            InstructionBase component = GetByType(type);
             if (component != null)
             {
-                component.Unknown = unk;
+                component.InstructionOffset = (uint)sr.Position - 5;
+                component.LineNumber = lineNumber;
                 component.Deserialize(parent, ref sr);
                 Components.Add(component);
             }
         }
 
-        public static IAdhocInstruction GetByType(AdhocCallType type)
+        public static InstructionBase GetByType(AdhocCallType type)
         {
             switch (type)
             {
                 case AdhocCallType.MODULE_DEFINE:
                     return new OpModule();
                 case AdhocCallType.METHOD_DEFINE:
-                    return new OpMethod();
+                case AdhocCallType.FUNCTION_DEFINE:
+                case AdhocCallType.FUNCTION_CONST:
+                case AdhocCallType.METHOD_CONST:
+                    return new OpMethod(type);
                 case AdhocCallType.VARIABLE_EVAL:
                     return new OpVariableEval();
                 case AdhocCallType.CALL:
@@ -148,12 +152,6 @@ namespace GTAdhocParser
                     return new OpStaticDefine();
                 case AdhocCallType.VARIABLE_PUSH:
                     return new OpVariablePush();
-                case AdhocCallType.FUNCTION_DEFINE:
-                    {
-                        var met = new OpMethod();
-                        met.CallType = type;
-                        return met;
-                    }
                 case AdhocCallType.BINARY_OPERATOR:
                     return new OpBinaryOperator();
                 case AdhocCallType.JUMP:
@@ -190,15 +188,24 @@ namespace GTAdhocParser
                     return new OpUnaryAssignOperator();
                 case AdhocCallType.SYMBOL_CONST:
                     return new OpSymbolConst();
-                case AdhocCallType.FUNCTION_CONST:
-                    return new OpFunctionConst();
-                case AdhocCallType.METHOD_CONST:
-                    return new OpMethodConst();
                 case AdhocCallType.OBJECT_SELECTOR:
                     return new OpObjectSelector();
+                case AdhocCallType.LONG_CONST:
+                    return new OpLongConst();
+                case AdhocCallType.UNDEF:
+                    return new OpUndef();
+                case AdhocCallType.TRY_CATCH:
+                    return new OpTryCatch();
+                case AdhocCallType.ASSIGN:
+                    return new OpAssign();
                 default:
                     return null;
             }
+        }
+
+        public void Decompile(CodeBuilder builder)
+        {
+            builder.AppendLine(string.Empty);
         }
     }
 

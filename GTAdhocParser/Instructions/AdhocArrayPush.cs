@@ -8,19 +8,23 @@ using Syroot.BinaryData.Memory;
 
 namespace GTAdhocParser.Instructions
 {
-    public class OpArrayPush : IAdhocInstruction
+    public class OpArrayPush : InstructionBase
     {
         public AdhocCallType CallType { get; set; } = AdhocCallType.ARRAY_PUSH;
-        public uint Unknown { get; set; }
 
         public uint Value;
 
-        public void Deserialize(AdhocFile parent, ref SpanReader sr)
+        public override void Deserialize(AdhocFile parent, ref SpanReader sr)
         {
 
         }
 
         public override string ToString()
-           => $"{Unknown, 4}| {CallType}";
+           => $"{CallType}";
+
+        public void Decompile(CodeBuilder builder)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

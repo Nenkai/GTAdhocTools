@@ -10,26 +10,24 @@ using GTAdhocParser;
 
 namespace GTAdhocParser.Instructions
 {
-    public class OpModule : IAdhocInstruction
+    public class OpModule : InstructionBase
     {
         public AdhocCallType CallType { get; set; } = AdhocCallType.MODULE_DEFINE;
-        public uint Unknown { get; set; }
+        
 
         public List<string> Names = new List<string>();
 
-        public void Deserialize(AdhocFile parent, ref SpanReader sr)
+        public override void Deserialize(AdhocFile parent, ref SpanReader sr)
         {
             Names = Utils.ReadADCStringTable(parent, ref sr);
         }
 
         public override string ToString()
-           => $"{Unknown, 4}| {CallType}: {Names[^1]}";
+           => $"{CallType}: {Names[^1]}";
 
-        public void GetHumanCode(CodeBuilder builder)
+        public void Decompile(CodeBuilder builder)
         {
-            builder.AppendLine($"module {Names[^1]}");
-            builder.AppendLine("{");
-            builder.IndentationDepth++;
+            builder.SetModule(this);
         }
     }
 }
