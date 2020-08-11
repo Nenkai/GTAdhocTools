@@ -23,7 +23,7 @@ namespace GTAdhocParser.Instructions
         }
 
         public override string ToString()
-           => $"{offset} {CallType}: {Value}";
+           => $"{CallType}: {Value}";
 
         public void Decompile(CodeBuilder builder)
         {

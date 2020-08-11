@@ -8,17 +8,18 @@ using Syroot.BinaryData.Memory;
 
 namespace GTAdhocParser.Instructions
 {
-    public class OpMapConst : InstructionBase
+    public class OpMapConstOld : InstructionBase
     {
-        public AdhocCallType CallType { get; set; } = AdhocCallType.MAP_CONST;
+        public AdhocCallType CallType { get; set; } = AdhocCallType.MAP_CONST_OLD;
         
+        public uint Value { get; set; }
         public override void Deserialize(AdhocFile parent, ref SpanReader sr)
         {
 
         }
 
         public override string ToString()
-           => $"{CallType}";
+           => $"{CallType}: {Value}";
 
         public void Decompile(CodeBuilder builder)
         {

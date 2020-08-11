@@ -30,7 +30,7 @@ namespace GTAdhocParser.Instructions
         }
 
         public override string ToString()
-           => $"{LineNumber,4}| {CallType}: Unk={Unk}";
+           => $"{CallType}: Unk={Unk}";
 
         public void Decompile(CodeBuilder builder)
         {

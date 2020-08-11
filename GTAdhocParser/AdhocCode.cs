@@ -128,6 +128,8 @@ namespace GTAdhocParser
                     return new OpVoidConst();
                 case AdhocCallType.SET_STATE:
                     return new OpSetState();
+                case AdhocCallType.SET_STATE_OLD:
+                    return new OpSetState() { CallType = type };
                 case AdhocCallType.NIL_CONST:
                     return new OpNilConst();
                 case AdhocCallType.ATTRIBUTE_DEFINE:
@@ -142,6 +144,8 @@ namespace GTAdhocParser
                     return new OpStringConst();
                 case AdhocCallType.POP:
                     return new OpPop();
+                case AdhocCallType.POP_OLD:
+                    return new OpPop() { CallType = type };
                 case AdhocCallType.CLASS_DEFINE:
                     return new OpClassDefine();
                 case AdhocCallType.ATTRIBUTE_EVAL:
@@ -166,10 +170,14 @@ namespace GTAdhocParser
                     return new OpEval();
                 case AdhocCallType.BINARY_ASSIGN_OPERATOR:
                     return new OpBinaryAssignOperator();
+                case AdhocCallType.LOGICAL_OR_OLD:
+                    return new OpLogicalOr() { CallType = type };
                 case AdhocCallType.LOGICAL_OR:
                     return new OpLogicalOr();
                 case AdhocCallType.LIST_ASSIGN:
                     return new OpListAssign();
+                case AdhocCallType.LIST_ASSIGN_OLD:
+                    return new OpListAssignOld();
                 case AdhocCallType.ELEMENT_PUSH:
                     return new OpElementPush();
                 case AdhocCallType.MAP_CONST:
@@ -178,10 +186,14 @@ namespace GTAdhocParser
                     return new OpMapInsert();
                 case AdhocCallType.UNARY_OPERATOR:
                     return new OpUnaryOperator();
+                case AdhocCallType.LOGICAL_AND_OLD:
+                    return new OpLogicalAnd() { CallType = type };
                 case AdhocCallType.LOGICAL_AND:
                     return new OpLogicalAnd();
                 case AdhocCallType.ARRAY_CONST:
                     return new OpArrayConst();
+                case AdhocCallType.ARRAY_CONST_OLD:
+                    return new OpArrayConst() { CallType = type };
                 case AdhocCallType.ARRAY_PUSH:
                     return new OpArrayPush();
                 case AdhocCallType.UNARY_ASSIGN_OPERATOR:
@@ -198,8 +210,16 @@ namespace GTAdhocParser
                     return new OpTryCatch();
                 case AdhocCallType.ASSIGN:
                     return new OpAssign();
+                case AdhocCallType.ASSIGN_OLD:
+                    return new OpAssign() { CallType = type };
+                case AdhocCallType.U_INT_CONST:
+                    return new OpUIntConst();
+                case AdhocCallType.REQUIRE:
+                    return new OpRequire();
+                case AdhocCallType.U_LONG_CONST:
+                    return new OpULongConst();
                 default:
-                    return null;
+                    throw new Exception($"Encountered unimplemented {type} instruction.");
             }
         }
 

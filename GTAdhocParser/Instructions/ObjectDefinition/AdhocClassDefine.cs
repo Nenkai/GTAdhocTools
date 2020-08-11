@@ -28,7 +28,6 @@ namespace GTAdhocParser.Instructions
         {
             builder.AppendLine($"class {ClassName} : {ExtendsFrom[^1]}");
             builder.AppendLine("{");
-            builder.IndentationDepth++;
         }
     }
 }

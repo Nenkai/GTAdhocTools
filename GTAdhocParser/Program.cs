@@ -9,11 +9,25 @@ namespace GTAdhocParser
     {
         static void Main(string[] args)
         {
-            var adc = AdhocFile.ReadFromFile(args[0]);
+            if (args.Length == 0)
+            {
+                Console.WriteLine("Missing file.");
+                return;
+            }
 
+            AdhocFile adc = null;
             bool withOffset = false;
-            if (args.Contains("--offset"))
-                withOffset = true;
+            try
+            {
+                adc = AdhocFile.ReadFromFile(args[0]);
+
+                if (args.Contains("--offset"))
+                    withOffset = true;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Errored while reading: {e.Message}");
+            }
 
             adc.Disassemble(Path.GetFileNameWithoutExtension(args[0]) + ".ad", withOffset);
         }
