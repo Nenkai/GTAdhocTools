@@ -22,7 +22,7 @@ namespace GTAdhocParser.Instructions
         public override string ToString()
             => $"{CallType}: StringIndex={StringIndex}";
 
-        public void Decompile(CodeBuilder builder)
+        public override void Decompile(CodeBuilder builder)
         {
             throw new NotImplementedException();
         }

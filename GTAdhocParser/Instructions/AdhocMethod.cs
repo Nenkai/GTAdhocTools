@@ -48,9 +48,9 @@ namespace GTAdhocParser.Instructions
             return sb.ToString();
         }
 
-        public void Decompile(CodeBuilder builder)
+        public override void Decompile(CodeBuilder builder)
         {
-            throw new NotImplementedException();
+            builder.SetCurrentFunction(this);
         }
     }
 }

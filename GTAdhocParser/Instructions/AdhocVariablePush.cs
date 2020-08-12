@@ -25,7 +25,7 @@ namespace GTAdhocParser.Instructions
         public override string ToString()
             => $"{CallType}: {string.Join(',', Names)}, Value={Value}";
 
-        public void Decompile(CodeBuilder builder)
+        public override void Decompile(CodeBuilder builder)
         {
             throw new NotImplementedException();
         }

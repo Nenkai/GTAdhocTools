@@ -258,7 +258,7 @@ namespace GTAdhocParser
             }
         }
 
-        public void Decompile(CodeBuilder builder)
+        public override void Decompile(CodeBuilder builder)
         {
             builder.AppendLine(string.Empty);
         }

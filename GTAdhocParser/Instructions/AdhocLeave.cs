@@ -25,7 +25,7 @@ namespace GTAdhocParser.Instructions
         public override string ToString()
            => $"{CallType}: V1={val1}, V2={val2}";
 
-        public void Decompile(CodeBuilder builder)
+        public override void Decompile(CodeBuilder builder)
         {
             throw new NotImplementedException();
         }

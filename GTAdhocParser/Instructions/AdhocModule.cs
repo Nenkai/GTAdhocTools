@@ -25,7 +25,7 @@ namespace GTAdhocParser.Instructions
         public override string ToString()
            => $"{CallType}: {Names[^1]}";
 
-        public void Decompile(CodeBuilder builder)
+        public override void Decompile(CodeBuilder builder)
         {
             builder.SetModule(this);
         }

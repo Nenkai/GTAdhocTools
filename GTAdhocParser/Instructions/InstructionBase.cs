@@ -14,5 +14,7 @@ namespace GTAdhocParser.Instructions
         public uint InstructionOffset { get; set; }
 
         public abstract void Deserialize(AdhocFile parent, ref SpanReader sr);
+
+        public abstract void Decompile(CodeBuilder builder);
     }
 }

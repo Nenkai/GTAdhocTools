@@ -4,12 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using GTAdhocParser.Decompiler;
+
 using Syroot.BinaryData.Memory;
 
 namespace GTAdhocParser.Instructions
 {
     /// <summary>
-    /// Line ending?
+    /// Line ending? Or used for comparison against null.
     /// </summary>
     public class OpVoidConst : InstructionBase
     {
@@ -24,9 +26,12 @@ namespace GTAdhocParser.Instructions
         public override string ToString()
             => $"{CallType}";
 
-        public void Decompile(CodeBuilder builder)
+        public override void Decompile(CodeBuilder builder)
         {
-            builder.AppendLine(string.Empty);
+            if (builder.CurrentFunction is null)
+                builder.AppendLine("");
+            else
+                builder.Variables.Add(null);
         }
     }
 }

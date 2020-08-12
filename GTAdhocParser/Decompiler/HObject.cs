@@ -8,11 +8,26 @@ namespace GTAdhocParser.Decompiler
 {
     public class HObject
     {
-        public ObjectType obj;
+        public HObject(HObjectType type)
+        {
+            Type = type;
+        }
+
+        public HObject(string objName, HObjectType type)
+        {
+            Name = objName;
+            Type = type;
+        }
+
+        public HObjectType Type;
+
+        public HObject Parent { get; set; }
+        public string Name { get; set; }
     }
 
-    public enum ObjectType
+    public enum HObjectType
     {
-
+        Variable,
+        Equals,
     }
 }

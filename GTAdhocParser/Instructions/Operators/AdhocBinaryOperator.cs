@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using GTAdhocParser.Decompiler;
+
 using Syroot.BinaryData.Memory;
 
 namespace GTAdhocParser.Instructions
@@ -93,9 +95,9 @@ namespace GTAdhocParser.Instructions
         public override string ToString()
             => $"{CallType}: {GetHumanReadable(Name)} ({Name})";
 
-        public void Decompile(CodeBuilder builder)
+        public override void Decompile(CodeBuilder builder)
         {
-            throw new NotImplementedException();
+            builder.Variables.Add(new HObject(HObjectType.Equals));
         }
     }
 }

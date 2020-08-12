@@ -29,6 +29,7 @@ namespace GTAdhocParser
                 Console.WriteLine($"Errored while reading: {e.Message}");
             }
 
+            //adc.Decompile(Path.GetFileNameWithoutExtension(args[0]) + ".ad");
             adc.Disassemble(Path.GetFileNameWithoutExtension(args[0]) + ".ad", withOffset);
         }
     }

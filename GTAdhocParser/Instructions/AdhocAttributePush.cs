@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using GTAdhocParser.Decompiler;
+
 using Syroot.BinaryData.Memory;
 
 namespace GTAdhocParser.Instructions
@@ -30,9 +32,21 @@ namespace GTAdhocParser.Instructions
         public override string ToString()
            => $"{CallType}: Attributes={string.Join(',', Attributes)}";
 
-        public void Decompile(CodeBuilder builder)
+        public override void Decompile(CodeBuilder builder)
         {
-            throw new NotImplementedException();
+            if (builder.Variables.Count != 0)
+            {
+                var newVariable = new HObject(Attributes[^1], HObjectType.Variable);
+                var top = builder.GetTopVariable();
+
+                // Update the old's parent with old
+                top.Parent = top;
+
+                // Old is new
+                top = newVariable;
+
+                // Now new's parent points to old
+            }
         }
     }
 }

@@ -23,7 +23,7 @@ namespace GTAdhocParser.Instructions
         public override string ToString()
            => $"{CallType}: Jump To Instruction {InstructionIndex}";
 
-        public void Decompile(CodeBuilder builder)
+        public override void Decompile(CodeBuilder builder)
         {
             throw new NotImplementedException();
         }

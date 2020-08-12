@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using GTAdhocParser.Decompiler;
+
 using Syroot.BinaryData.Memory;
 
 namespace GTAdhocParser.Instructions
@@ -25,9 +27,15 @@ namespace GTAdhocParser.Instructions
         public override string ToString()
             => $"{CallType}: {Names[^1]}, ValueEval={Value}";
 
-        public void Decompile(CodeBuilder builder)
+        public override void Decompile(CodeBuilder builder)
         {
-            throw new NotImplementedException();
+            if (builder.CurrentFunction != null)
+            {
+                builder.Variables.Add(new HObject(Names[^1], HObjectType.Variable));
+                var argExists = builder.CurrentFunction.Code.Arguments.Exists(e => e.argumentIndex == Value); // Evaluating function argument?
+                if (argExists)
+                    return; // Then we don't need it, we already keep track of it
+            }
         }
     }
 }

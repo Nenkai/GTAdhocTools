@@ -22,5 +22,10 @@ namespace GTAdhocParser.Instructions
 
         public override string ToString()
            => CallType.ToString();
+
+        public override void Decompile(CodeBuilder builder)
+        {
+
+        }
     }
 }

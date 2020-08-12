@@ -29,7 +29,7 @@ namespace GTAdhocParser.Instructions
         public override string ToString()
             => $"{CallType}: {ImportNames[^1]}, Unk2={Unk2}, Unk3={Unk3}";
 
-        public void Decompile(CodeBuilder builder)
+        public override void Decompile(CodeBuilder builder)
         {
             builder.AppendLine($"import {ImportNames[^1]}");
         }
