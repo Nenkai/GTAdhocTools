@@ -15,22 +15,35 @@ namespace GTAdhocParser
                 return;
             }
 
-            AdhocFile adc = null;
-            bool withOffset = false;
-            try
+            if (!File.Exists(args[0]))
             {
-                adc = AdhocFile.ReadFromFile(args[0]);
-
-                if (args.Contains("--offset"))
-                    withOffset = true;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine($"Errored while reading: {e.Message}");
+                Console.WriteLine("File does not exist.");
+                return;
             }
 
-            //adc.Decompile(Path.GetFileNameWithoutExtension(args[0]) + ".ad");
-            adc.Disassemble(Path.GetFileNameWithoutExtension(args[0]) + ".ad", withOffset);
+            if (args[0].EndsWith(".mpackage"))
+            {
+                AdhocPackage.ExtractPackage(args[0]);
+            }
+            else
+            {
+                AdhocFile adc = null;
+                bool withOffset = false;
+                try
+                {
+                    adc = AdhocFile.ReadFromFile(args[0]);
+
+                    if (args.Contains("--offset"))
+                        withOffset = true;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"Errored while reading: {e.Message}");
+                }
+
+                //adc.Decompile(Path.GetFileNameWithoutExtension(args[0]) + ".ad");
+                adc.Disassemble(Path.GetFileNameWithoutExtension(args[0]) + ".ad", withOffset);
+            }
         }
     }
 }

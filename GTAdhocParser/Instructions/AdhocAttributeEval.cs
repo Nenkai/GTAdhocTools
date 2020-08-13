@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 using Syroot.BinaryData.Memory;
 
+using GTAdhocParser.Decompiler;
+
 namespace GTAdhocParser.Instructions
 {
     public class OpAttributeEval : InstructionBase
@@ -25,7 +27,19 @@ namespace GTAdhocParser.Instructions
 
         public override void Decompile(CodeBuilder builder)
         {
-            throw new NotImplementedException();
+            var newVariable = new HObject(Names[^1], HObjectType.Variable);
+            var top = builder.GetTopVariable();
+
+            // Update the old's parent with old
+            var old = top;
+
+            // Old is new
+            top = newVariable;
+            top.Parent = old;
+
+            top.Name = $"{top.Parent}.{top.Name}";
+            builder.Variables[^1] = top;
+            // Now new's parent points to old
         }
     }
 }

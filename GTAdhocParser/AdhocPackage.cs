@@ -14,7 +14,7 @@ namespace GTAdhocParser
     {
         public const string Magic = "MPKG";
 
-        public static unsafe void ReadPackage(string path)
+        public static void ExtractPackage(string path)
         {
             var bytes = File.ReadAllBytes(path);
             var sr = new SpanReader(bytes, encoding: Encoding.ASCII);
@@ -27,7 +27,8 @@ namespace GTAdhocParser
             uint tableOfContentsOffset = sr.ReadUInt32(); // Table of contents
 
             string dir = Path.GetDirectoryName(path);
-            string outDir = Path.Combine(dir, Path.GetFileNameWithoutExtension(path));
+            string outDir = Path.Combine(dir, $"{Path.GetFileNameWithoutExtension(path)}_extracted");
+
             Directory.CreateDirectory(outDir);
 
             byte[] buffer = new byte[512_000];
@@ -45,15 +46,18 @@ namespace GTAdhocParser
                 sr.Position = (int)compressedDataOffset;
 
                 int uncompressedSize;
-                fixed (byte* pBuffer = &sr.Span.Slice(sr.Position)[0])
+
+                unsafe
                 {
-                    using var ums = new UnmanagedMemoryStream(pBuffer, compressedFileSize);
-                    using var ds = new DeflateStream(ums, CompressionMode.Decompress);
-                    uncompressedSize = ds.Read(buffer, 0, buffer.Length);
+                    fixed (byte* pBuffer = &sr.Span.Slice(sr.Position)[0])
+                    {
+                        using var ums = new UnmanagedMemoryStream(pBuffer, compressedFileSize);
+                        using var ds = new DeflateStream(ums, CompressionMode.Decompress);
+                        uncompressedSize = ds.Read(buffer, 0, buffer.Length);
 
-                    using (var fs = new FileStream(Path.Combine(outDir, Path.GetFileName(fileName)), FileMode.Create))
-                        fs.Write(buffer, 0, uncompressedSize);
-
+                        using (var fs = new FileStream(Path.Combine(outDir, Path.GetFileName(fileName)), FileMode.Create))
+                            fs.Write(buffer, 0, uncompressedSize);
+                    }
                 }
 
                 Console.WriteLine($"Extracted: {fileName}");

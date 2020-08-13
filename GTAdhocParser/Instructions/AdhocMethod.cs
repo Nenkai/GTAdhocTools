@@ -51,6 +51,8 @@ namespace GTAdhocParser.Instructions
         public override void Decompile(CodeBuilder builder)
         {
             builder.SetCurrentFunction(this);
+            foreach (var ins in Code.Components)
+                ins.Decompile(builder);
         }
     }
 }

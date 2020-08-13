@@ -23,10 +23,24 @@ namespace GTAdhocParser.Decompiler
 
         public HObject Parent { get; set; }
         public string Name { get; set; }
+
+        public override string ToString()
+        {
+            if (!string.IsNullOrEmpty(Name))
+                return Name;
+
+            if (Type == HObjectType.Equals)
+                return "==";
+            else if (Type == HObjectType.Null)
+                return "nil";
+
+            return null;
+        }
     }
 
     public enum HObjectType
     {
+        Null,
         Variable,
         Equals,
     }

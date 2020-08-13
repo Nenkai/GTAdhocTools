@@ -15,8 +15,8 @@ namespace GTAdhocParser
 
         public HModule CurrentModule { get; set; }
         public HFunction CurrentFunction { get; set; }
-        
-        public List<HObject> Variables { get; set; }
+
+        public List<HObject> Variables { get; set; } = new List<HObject>();
 
         private StringBuilder sb = new StringBuilder();
 
@@ -31,7 +31,6 @@ namespace GTAdhocParser
         public void Append(string code)
         {
             sb.Append(new string('\t', _depth)).Append(code);
-            sb.Append(code);
         }
 
         public void AppendLine(string code)
@@ -39,16 +38,23 @@ namespace GTAdhocParser
             sb.Append(new string('\t', _depth)).AppendLine(code);
         }
 
+        public void AppendWithScope(string code)
+        {
+            AppendLine(code);
+            AppendLine("{");
+        }
+
         public void SetModule(OpModule module)
         {
-            _depth++;
+            AppendWithScope($"module {module.Names[^1]}");
             CurrentModule = new HModule(module.Names[^1]);
+            _depth++;
         }
 
         public void SetCurrentFunction(OpMethod method)
         {
             CurrentFunction = new HFunction() { Code = method.Code };
-            sb.Append($"function {method.MethodName}");
+            Append($"function {method.MethodName}");
 
             if (method.Code.Arguments.Count != 0)
             {
@@ -65,8 +71,26 @@ namespace GTAdhocParser
             }
 
             AppendRaw("\n");
+            AppendLine("{");
+            _depth++;
+        }
 
-            sb.AppendLine("{");
+        public void AddCondition(bool ifTrue)
+        {
+            Append("if (");
+
+            AppendRaw(Variables[Variables.Count - 3].ToString());
+            AppendRaw(" ");
+
+            var op = Variables[Variables.Count - 1];
+            if (op.Type == HObjectType.Equals)
+                AppendRaw("== ");
+
+            AppendRaw(Variables[Variables.Count - 2].ToString());
+            AppendRaw(")");
+
+            AppendWithScope("");
+
         }
     }
 }

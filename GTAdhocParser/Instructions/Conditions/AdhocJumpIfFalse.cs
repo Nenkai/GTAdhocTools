@@ -25,7 +25,7 @@ namespace GTAdhocParser.Instructions
 
         public override void Decompile(CodeBuilder builder)
         {
-            throw new NotImplementedException();
+            builder.AddCondition(false);
         }
     }
 }

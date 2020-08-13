@@ -28,10 +28,7 @@ namespace GTAdhocParser.Instructions
 
         public override void Decompile(CodeBuilder builder)
         {
-            if (builder.CurrentFunction is null)
-                builder.AppendLine("");
-            else
-                builder.Variables.Add(null);
+
         }
     }
 }
