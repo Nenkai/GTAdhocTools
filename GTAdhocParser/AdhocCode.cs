@@ -100,10 +100,10 @@ namespace GTAdhocParser
             {
                 for (int i = 0; i < instructionCount; i++)
                 {
-                    uint idk = sr.ReadUInt32();
+                    uint originalLineNumber = sr.ReadUInt32();
                     AdhocCallType type = (AdhocCallType)sr.ReadByte();
 
-                    ReadComponent(parent, idk, type, ref sr);
+                    ReadComponent(parent, originalLineNumber, type, ref sr);
                 }
             }
         }
@@ -113,8 +113,8 @@ namespace GTAdhocParser
             InstructionBase component = GetByType(type);
             if (component != null)
             {
-                component.InstructionOffset = (uint)sr.Position - 5;
-                component.LineNumber = lineNumber;
+                component.InstructionOffset = (uint)sr.Position + 4;
+                component.SourceLineNumber = lineNumber;
                 component.Deserialize(parent, ref sr);
                 Components.Add(component);
             }
@@ -253,6 +253,8 @@ namespace GTAdhocParser
                     return new OpVaCall();
                 case AdhocCallType.NOP:
                     return new OpNop();
+                case AdhocCallType.DOUBLE_CONST:
+                    return new OpDoubleConst();
                 default:
                     throw new Exception($"Encountered unimplemented {type} instruction.");
             }

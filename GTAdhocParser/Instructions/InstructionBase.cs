@@ -10,7 +10,7 @@ namespace GTAdhocParser.Instructions
 {
     public abstract class InstructionBase
     {
-        public uint LineNumber { get; set; }
+        public uint SourceLineNumber { get; set; }
         public uint InstructionOffset { get; set; }
 
         public abstract void Deserialize(AdhocFile parent, ref SpanReader sr);

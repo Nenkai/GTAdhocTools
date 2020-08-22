@@ -60,14 +60,14 @@ namespace GTAdhocParser.Instructions
                     return "|";
 
                 case "__post_decr__":
-                    return "--@";
+                    return "@--";
                 case "__post_incr__":
-                    return "++@";
+                    return "@++";
 
                 case "__pre_decr__":
-                    return "@--";
+                    return "--@";
                 case "__pre_incr__":
-                    return "@++";
+                    return "++@";
 
                 case "__pow__":
                     return "** (power)";
@@ -86,6 +86,16 @@ namespace GTAdhocParser.Instructions
 
                 case "__xor__":
                     return "^";
+
+                case "__div__":
+                    return "/";
+                case "__mul__":
+                    return "*";
+                case "__add__":
+                    return "+";
+                case "__min__":
+                    return "-";
+
 
                 default:
                     return @operator;

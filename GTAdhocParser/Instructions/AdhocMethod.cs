@@ -33,18 +33,18 @@ namespace GTAdhocParser.Instructions
         {
             var sb = new StringBuilder();
             sb.Append(CallType.ToString()).Append(" - ").Append(MethodName);
+            sb.Append("(");
             if (Code.Arguments.Count != 0)
             {
-                sb.Append(" (");
                 for (int i = 0; i < Code.Arguments.Count; i++)
                 {
                     sb.Append(Code.Arguments[i].Item1).Append($"[{Code.Arguments[i].Item2}]");
                     if (i != Code.Arguments.Count - 1)
-                        sb.Append(',');
+                        sb.Append(", ");
                 }
-                sb.Append(')');
             }
 
+            sb.Append(')');
             return sb.ToString();
         }
 

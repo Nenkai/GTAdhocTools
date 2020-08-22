@@ -108,6 +108,8 @@ namespace GTAdhocParser
             sw.WriteLine();
 
             var d = new CodeBuilder();
+
+            int ifdepth = 0;
             for (var i = 0; i < ParentCode.Components.Count; i++)
             {
                 var inst = ParentCode.Components[i];
@@ -115,26 +117,57 @@ namespace GTAdhocParser
                 if (inst is OpMethod)
                     sw.WriteLine();
 
+                if (ifdepth > 0)
+                    sw.Write(new string(' ', 2 * ifdepth));
+
                 if (withOffset)
-                    sw.Write($"{inst.InstructionOffset,6:X2}|");
-                sw.WriteLine($"{inst.LineNumber,4}| {ParentCode.Components[i]}");
+                    sw.Write($"{inst.InstructionOffset - 5,6:X2}|");
+                sw.Write($"{inst.SourceLineNumber,4}|");
+                sw.Write($"{i,3}| "); // Function Instruction Number
+                sw.WriteLine(ParentCode.Components[i]);
 
-
+                int depth = 0;
                 if (inst is OpMethod method)
-                {
-                    foreach (var metInstruction in method.Code.Components)
-                    {
-                        sw.Write("  ");
-                        if (withOffset)
-                            sw.Write($"{metInstruction.InstructionOffset-5,6:X2}|");
-
-                        sw.WriteLine($"{metInstruction.LineNumber,4}| {metInstruction}");
-                    }
-                    sw.WriteLine();
-                }
+                    DisassembleMethod(sw, method, withOffset, ref depth);
+                else if (inst is OpJumpIfFalse || inst is OpJumpIfTrue)
+                    ifdepth++;
+                else if (inst is OpLeave)
+                    ifdepth--;
             }
 
             sw.Flush();
+        }
+
+        public void DisassembleMethod(StreamWriter sw, OpMethod method, bool withOffset, ref int depth)
+        {
+            depth++;
+
+            int ifdepth = 0;
+            string curDepthStr = new string(' ', 2 * depth);
+            for (int i = 0; i < method.Code.Components.Count; i++)
+            {
+                InstructionBase metInstruction = method.Code.Components[i];
+                sw.Write(curDepthStr);
+
+                if (ifdepth > 0)
+                    sw.Write(new string(' ', 2 * ifdepth));
+
+                if (withOffset)
+                    sw.Write($"{metInstruction.InstructionOffset - 5,6:X2}|");
+                sw.Write($"{metInstruction.SourceLineNumber,4}|");
+                sw.Write($"{i,3}| "); // Function Instruction Number
+                sw.WriteLine(metInstruction);
+
+                if (metInstruction is OpMethod methodFunction)
+                    DisassembleMethod(sw, methodFunction, withOffset, ref depth);
+                else if (metInstruction is OpJumpIfFalse || metInstruction is OpJumpIfTrue)
+                    ifdepth++;
+                else if (metInstruction is OpLeave)
+                    ifdepth--;
+            }
+
+            depth--;
+            sw.WriteLine();
         }
     }
 }
