@@ -16,12 +16,12 @@ namespace GTAdhocParser.Instructions
         
 
         public List<string> Names = new List<string>();
-        public uint Value;
+        public int Value;
 
         public override void Deserialize(AdhocFile parent, ref SpanReader sr)
         {
             Names = Utils.ReadADCStringTable(parent, ref sr);
-            Value = sr.ReadUInt32();
+            Value = sr.ReadInt32();
         }
 
         public override string ToString()

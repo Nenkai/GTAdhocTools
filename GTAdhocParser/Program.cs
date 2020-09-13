@@ -28,13 +28,10 @@ namespace GTAdhocParser
             else
             {
                 AdhocFile adc = null;
-                bool withOffset = false;
+                bool withOffset = true;
                 try
                 {
                     adc = AdhocFile.ReadFromFile(args[0]);
-
-                    if (args.Contains("--offset"))
-                        withOffset = true;
                 }
                 catch (Exception e)
                 {
@@ -42,7 +39,7 @@ namespace GTAdhocParser
                 }
 
                 //adc.Decompile(Path.GetFileNameWithoutExtension(args[0]) + ".ad");
-                adc.Disassemble(Path.GetFileNameWithoutExtension(args[0]) + ".ad", withOffset);
+                adc.Disassemble(Path.ChangeExtension(args[0], ".ad"), withOffset);
             }
         }
     }

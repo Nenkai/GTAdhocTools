@@ -255,6 +255,12 @@ namespace GTAdhocParser
                     return new OpNop();
                 case AdhocCallType.DOUBLE_CONST:
                     return new OpDoubleConst();
+                case AdhocCallType.UNK_69:
+                    return new Op69();
+                case AdhocCallType.UNK_70:
+                    return new Op70();
+                case AdhocCallType.UNK_71:
+                    return new Op71();
                 default:
                     throw new Exception($"Encountered unimplemented {type} instruction.");
             }
@@ -337,6 +343,11 @@ namespace GTAdhocParser
         MODULE_CONSTRUCTOR,
         VA_CALL,
         CODE_EVAL,
+
+        // GT Sport
+        UNK_69,
+        UNK_70,
+        UNK_71,
 
     }
 }
