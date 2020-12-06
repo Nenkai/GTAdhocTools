@@ -12,9 +12,11 @@ namespace GTAdhocParser
 {
     public class AdhocCode : InstructionBase
     {
-        private byte[] _buffer;
         public AdhocCallType CallType { get; set; } = AdhocCallType.METHOD_DEFINE;
 
+        /// <summary>
+        /// Instructions for this code.
+        /// </summary>
         public List<InstructionBase> Components = new List<InstructionBase>();
 
         /// <summary>
@@ -26,11 +28,23 @@ namespace GTAdhocParser
 
         public List<string> unkStr2 = new List<string>();
 
+        /// <summary>
+        /// Source File Name & Line Numbers
+        /// </summary>
+        public bool HasDebuggingInformation { get; set; }
 
-        public List<string> oldVersListUnk = new List<string>();
-
+        /// <summary>
+        /// Source File Name for this code.
+        /// </summary>
         public string OriginalSourceFile { get; set; }
         public byte CodeVersion { get; set; }
+
+        public int Unk1;
+        public int Unk2;
+        public int Unk3;
+
+        public uint InstructionCount { get; set; }
+        public uint InstructionCountOffset { get; set; }
 
         public override void Deserialize(AdhocFile parent, ref SpanReader sr)
         {
@@ -40,17 +54,22 @@ namespace GTAdhocParser
 
                 if (parent.Version > 3)
                 {
-                    uint unkCount = sr.ReadUInt32();
-                    for (int i = 0; i < unkCount; i++)
-                        oldVersListUnk.Add(Utils.ReadADCString(parent, ref sr));
+                    uint argCount = sr.ReadUInt32();
+                    for (int i = 0; i < argCount; i++)
+                        Arguments.Add( (Utils.ReadADCString(parent, ref sr), 0));
                 }
             }
             else
             {
-                sr.ReadByte();
+                HasDebuggingInformation = sr.ReadBoolean();
                 CodeVersion = sr.ReadByte();
 
-                OriginalSourceFile = Utils.ReadADCString(parent, ref sr);
+                if (parent.Version != 8) // Why PDI? Changed your mind after 8?
+                {
+                    if (HasDebuggingInformation)
+                        OriginalSourceFile = Utils.ReadADCString(parent, ref sr);
+                }
+                
 
                 if (parent.Version >= 12)
                 {
@@ -84,23 +103,28 @@ namespace GTAdhocParser
 
             if (parent.Version <= 10)
             {
-                uint unkCount4 = sr.ReadUInt32();
-                uint unkCount5 = sr.ReadUInt32();
+                Unk2 = sr.ReadInt32();
+                Unk1 = sr.ReadInt32();
+                Unk3 = Unk2;
             }
             else
             {
 
-                uint unkCount4 = sr.ReadUInt32();
-                uint unkCount5 = sr.ReadUInt32();
-                uint unkCount6 = sr.ReadUInt32();
+                Unk1 = sr.ReadInt32();
+                Unk2 = sr.ReadInt32();
+                Unk3 = sr.ReadInt32();
             }
 
-            uint instructionCount = sr.ReadUInt32();
-            if (instructionCount < 0x40000000)
+            InstructionCountOffset = (uint)sr.Position;
+            InstructionCount = sr.ReadUInt32();
+            if (InstructionCount < 0x40000000)
             {
-                for (int i = 0; i < instructionCount; i++)
+                for (int i = 0; i < InstructionCount; i++)
                 {
-                    uint originalLineNumber = sr.ReadUInt32();
+                    uint originalLineNumber = 0;
+                    if (HasDebuggingInformation) 
+                        originalLineNumber = sr.ReadUInt32();
+
                     AdhocCallType type = (AdhocCallType)sr.ReadByte();
 
                     ReadComponent(parent, originalLineNumber, type, ref sr);

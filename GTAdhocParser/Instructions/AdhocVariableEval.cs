@@ -25,7 +25,7 @@ namespace GTAdhocParser.Instructions
         }
 
         public override string ToString()
-            => $"{CallType}: {Names[^1]}, ValueEval={Value}";
+            => $"{CallType}: {string.Join(',', Names)}, ValueEval={Value}";
 
         public override void Decompile(CodeBuilder builder)
         {

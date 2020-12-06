@@ -28,17 +28,17 @@ namespace GTAdhocParser
         public static AdhocFile ReadFromFile(string path)
         {
             var bytes = File.ReadAllBytes(path);
-            var sr = new SpanReader(bytes, encoding: Encoding.ASCII);
+            var sr = new SpanReader(bytes, encoding: Encoding.UTF8);
 
             string magic = sr.ReadStringRaw(4);
             if (!magic.Equals(MAGIC))
                 throw new Exception("Invalid MAGIC, doesn't match ADCH.");
 
-            byte version = (byte)int.Parse(Encoding.ASCII.GetChars(sr.ReadBytes(3)));
+            byte version = (byte)int.Parse(sr.ReadStringRaw(3));
             sr.ReadByte();
             var adc = new AdhocFile(version);
 
-            if (adc.Version >= 8)
+            if (adc.Version >= 9)
                 adc.ParseStringTable(ref sr);
 
             adc.ParentCode = new AdhocCode();
@@ -54,7 +54,10 @@ namespace GTAdhocParser
             for (var i = 0; i < entryCount; i++)
             {
                 int strLen = (int)sr.DecodeBitsAndAdvance();
-                StringTable[i] = sr.ReadStringRaw(strLen);
+
+                // Bugged, doesnt actually read the string length
+                //StringTable[i] = sr.ReadStringRaw(strLen);
+                StringTable[i] = sr.Encoding.GetString(sr.ReadBytes(strLen));
             }
         }
 
@@ -104,7 +107,7 @@ namespace GTAdhocParser
 
             sw.Write($"Version: {Version}");
             if (StringTable != null)
-                sw.Write($"{StringTable.Length} strings)");
+                sw.Write($"({StringTable.Length} strings)");
             sw.WriteLine();
 
             var d = new CodeBuilder();

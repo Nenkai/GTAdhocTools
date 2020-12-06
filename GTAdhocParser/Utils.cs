@@ -40,10 +40,7 @@ namespace GTAdhocParser
         public static string ReadADCString(AdhocFile parent, ref SpanReader sr)
         {
             if (parent.Version <= 8)
-            {
-                ushort strLen = sr.ReadUInt16();
-                return sr.ReadStringRaw((int)strLen);
-            }
+                return sr.ReadString2();
             else
             {
                 uint strTableIndex = (uint)sr.DecodeBitsAndAdvance();

@@ -44,7 +44,8 @@ namespace GTAdhocParser.Instructions
                 }
             }
 
-            sb.Append(')');
+            sb.AppendLine(")");
+            sb.Append("  > Instruction Count: ").Append(Code.InstructionCount).Append(" (").Append(Code.InstructionCountOffset.ToString("X2")).Append(')');
             return sb.ToString();
         }
 
