@@ -24,9 +24,7 @@ namespace GTAdhocParser
         /// The first argument is always "self", if declaring a class method.
         /// </summary>
         public List<(string argumentName, uint argumentIndex)> Arguments = new List<(string, uint)>();
-
-
-        public List<string> unkStr2 = new List<string>();
+        public List<(string argumentName, uint argumentIndex)> FunctionConstArguments = new List<(string, uint)>();
 
         /// <summary>
         /// Source File Name & Line Numbers
@@ -50,6 +48,7 @@ namespace GTAdhocParser
         {
             if (parent.Version < 8)
             {
+                HasDebuggingInformation = true; // Not in code paths, but its forced to read
                 OriginalSourceFile = Utils.ReadADCString(parent, ref sr);
 
                 if (parent.Version > 3)
@@ -87,13 +86,13 @@ namespace GTAdhocParser
                     }
                 }
 
-                uint unkCount2 = sr.ReadUInt32();
-                if (unkCount2 > 0)
+                uint funcArgs = sr.ReadUInt32();
+                if (funcArgs > 0)
                 {
-                    for (int i = 0; i < unkCount2; i++)
+                    for (int i = 0; i < funcArgs; i++)
                     {
-                        string u = Utils.ReadADCString(parent, ref sr);
-                        unkStr2.Add(u);
+                        string argName = Utils.ReadADCString(parent, ref sr);
+                        FunctionConstArguments.Add((argName, sr.ReadUInt32()));
                         sr.ReadUInt32();
                     }
                 }

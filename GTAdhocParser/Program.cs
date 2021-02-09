@@ -40,6 +40,7 @@ namespace GTAdhocParser
 
                 //adc.Decompile(Path.GetFileNameWithoutExtension(args[0]) + ".ad");
                 adc.Disassemble(Path.ChangeExtension(args[0], ".ad"), withOffset);
+                adc.PrintStrings(Path.ChangeExtension(args[0], ".strings"));
             }
         }
     }

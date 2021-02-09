@@ -45,7 +45,9 @@ namespace GTAdhocParser.Instructions
             }
 
             sb.AppendLine(")");
-            sb.Append("  > Instruction Count: ").Append(Code.InstructionCount).Append(" (").Append(Code.InstructionCountOffset.ToString("X2")).Append(')');
+            sb.Append("  > Instruction Count: ").Append(Code.InstructionCount).Append(" (").Append(Code.InstructionCountOffset.ToString("X2")).Append(')').AppendLine();
+            sb.Append($"  > StackUnk1: {Code.Unk1} - StackUnk2: {Code.Unk2} - StackUnk3: {Code.Unk3}");
+
             return sb.ToString();
         }
 
