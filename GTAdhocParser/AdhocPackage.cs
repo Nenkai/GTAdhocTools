@@ -8,7 +8,7 @@ using System.IO;
 using System.IO.Compression;
 using Syroot.BinaryData.Memory;
 
-namespace GTAdhocParser
+namespace GTAdhocTools
 {
     public class AdhocPackage
     {

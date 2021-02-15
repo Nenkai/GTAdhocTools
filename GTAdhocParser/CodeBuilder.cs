@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using GTAdhocParser.Instructions;
-using GTAdhocParser.Decompiler;
+using GTAdhocTools.Instructions;
+using GTAdhocTools.Decompiler;
 
-namespace GTAdhocParser
+namespace GTAdhocTools
 {
     public class CodeBuilder
     {

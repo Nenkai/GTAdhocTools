@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GTAdhocParser.Decompiler
+namespace GTAdhocTools.Decompiler
 {
     public class HModule
     {

@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 using Syroot.BinaryData.Memory;
 
-using GTAdhocParser;
+using GTAdhocTools;
 
-namespace GTAdhocParser.Instructions
+namespace GTAdhocTools.Instructions
 {
     public class OpModule : InstructionBase
     {

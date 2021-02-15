@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using GTAdhocParser.Decompiler;
+using GTAdhocTools.Decompiler;
 
 using Syroot.BinaryData.Memory;
 
-namespace GTAdhocParser.Instructions
+namespace GTAdhocTools.Instructions
 {
     public class OpVariableEval : InstructionBase
     {

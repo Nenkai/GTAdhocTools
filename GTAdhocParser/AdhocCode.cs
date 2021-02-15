@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using System.IO;
 using Syroot.BinaryData.Memory;
 
-using GTAdhocParser.Instructions;
+using GTAdhocTools.Instructions;
 
-namespace GTAdhocParser
+namespace GTAdhocTools
 {
     public class AdhocCode : InstructionBase
     {
@@ -37,9 +37,9 @@ namespace GTAdhocParser
         public string OriginalSourceFile { get; set; }
         public byte CodeVersion { get; set; }
 
-        public int Unk1;
-        public int Unk2;
-        public int Unk3;
+        public int StackUnk;
+        public int StackSize1;
+        public int StackSize2;
 
         public uint InstructionCount { get; set; }
         public uint InstructionCountOffset { get; set; }
@@ -93,7 +93,6 @@ namespace GTAdhocParser
                     {
                         string argName = Utils.ReadADCString(parent, ref sr);
                         FunctionConstArguments.Add((argName, sr.ReadUInt32()));
-                        sr.ReadUInt32();
                     }
                 }
 
@@ -102,16 +101,16 @@ namespace GTAdhocParser
 
             if (parent.Version <= 10)
             {
-                Unk2 = sr.ReadInt32();
-                Unk1 = sr.ReadInt32();
-                Unk3 = Unk2;
+                StackSize1 = sr.ReadInt32();
+                StackUnk = sr.ReadInt32();
+                StackSize2 = StackSize1;
             }
             else
             {
 
-                Unk1 = sr.ReadInt32();
-                Unk2 = sr.ReadInt32();
-                Unk3 = sr.ReadInt32();
+                StackUnk = sr.ReadInt32();
+                StackSize1 = sr.ReadInt32();
+                StackSize2 = sr.ReadInt32();
             }
 
             InstructionCountOffset = (uint)sr.Position;

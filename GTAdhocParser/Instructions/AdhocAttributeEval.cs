@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 using Syroot.BinaryData.Memory;
 
-using GTAdhocParser.Decompiler;
+using GTAdhocTools.Decompiler;
 
-namespace GTAdhocParser.Instructions
+namespace GTAdhocTools.Instructions
 {
     public class OpAttributeEval : InstructionBase
     {

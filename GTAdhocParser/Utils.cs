@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using Syroot.BinaryData;
 using Syroot.BinaryData.Memory;
 
-namespace GTAdhocParser
+namespace GTAdhocTools
 {
     public static class Utils
     {
@@ -21,6 +22,16 @@ namespace GTAdhocParser
                 mask <<= 7;
             }
             return value;
+        }
+
+        public static void AlignWithValue(this BinaryStream bs, int alignment, byte value, bool grow = false)
+        {
+            long basePos = bs.Position;
+            long newPos = bs.Align(alignment);
+
+            bs.Position = basePos;
+            for (long i = basePos; i < newPos; i++)
+                bs.WriteByte(value);
         }
 
         public static List<string> ReadADCStringTable(AdhocFile parent, ref SpanReader sr)
