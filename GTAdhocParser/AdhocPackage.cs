@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 using System.IO;
 using System.IO.Compression;
+using Syroot.BinaryData;
 using Syroot.BinaryData.Memory;
 
 namespace GTAdhocTools
@@ -27,7 +28,7 @@ namespace GTAdhocTools
             uint tableOfContentsOffset = sr.ReadUInt32(); // Table of contents
 
             string dir = Path.GetDirectoryName(path);
-            string outDir = Path.Combine(dir, $"{Path.GetFileNameWithoutExtension(path)}_extracted");
+            string outDir = $"{Path.GetFileNameWithoutExtension(path)}_extracted";
 
             Directory.CreateDirectory(outDir);
 
@@ -43,6 +44,9 @@ namespace GTAdhocTools
                 sr.Position = (int)fileNameOffset;
                 string fileName = sr.ReadString0();
 
+                fileName = fileName.Replace("%P", "gt6");
+                Directory.CreateDirectory(outDir + Path.GetDirectoryName(fileName));
+
                 sr.Position = (int)compressedDataOffset;
 
                 int uncompressedSize;
@@ -55,7 +59,7 @@ namespace GTAdhocTools
                         using var ds = new DeflateStream(ums, CompressionMode.Decompress);
                         uncompressedSize = ds.Read(buffer, 0, buffer.Length);
 
-                        using (var fs = new FileStream(Path.Combine(outDir, Path.GetFileName(fileName)), FileMode.Create))
+                        using (var fs = new FileStream(outDir + fileName, FileMode.Create))
                             fs.Write(buffer, 0, uncompressedSize);
                     }
                 }
@@ -65,6 +69,65 @@ namespace GTAdhocTools
 
             }
         }
+
+        public static void PackFromFolder(string inputFolder, string outFile)
+        {
+            Console.WriteLine("[:] Packing MPackage..");
+
+            var files = Directory.GetFiles(inputFolder, "*", SearchOption.AllDirectories)
+                .OrderBy(e => e, StringComparer.Ordinal)
+                       .ToArray();
+
+            if (outFile is null)
+                outFile = $"{Path.GetFileName(inputFolder)}.mpackage";
+
+            using var fs = new FileStream(outFile, FileMode.Create);
+            using var bs = new BinaryStream(fs, ByteConverter.Little);
+
+            bs.WriteString(Magic, StringCoding.Raw);
+            bs.WriteInt32(0); // Relocation Ptr
+            bs.WriteInt32(files.Length);
+
+            // Skip toc offset for now
+            bs.Position = 0x10;
+
+            List<(int stringOffset, int dataOffset, int compressedSize)> toc = new(files.Length);
+            foreach (var file in files)
+            {
+                int stringOffset = (int)bs.Position;
+                string fileName = file.Replace('\\', '/'); // Replace to any wanted path separator
+                fileName = fileName.Substring(fileName.IndexOf('/')); // Remove the parent
+                if (!fileName.StartsWith('/'))
+                    fileName = '/' + fileName; // Ensure it starts with '/'
+
+                fileName = fileName.Replace("gt6", "%P");
+
+                bs.WriteString(fileName, StringCoding.ZeroTerminated);
+                int entryOffsetPos = (int)bs.Position;
+                using (var ds = new DeflateStream(bs, CompressionMode.Compress, true))
+                {
+                    byte[] fileData = File.ReadAllBytes(file);
+                    ds.Write(fileData, 0, fileData.Length);
+                }
+                int compressSize = (int)bs.Position - entryOffsetPos;
+
+                toc.Add( (stringOffset, entryOffsetPos, compressSize) );
+            }
+
+            bs.Align(0x04, true);
+            int tocOffset = (int)bs.Position;
+
+            for (int i = 0; i < toc.Count; i++)
+            {
+                bs.WriteInt32(toc[i].stringOffset);
+                bs.WriteInt32(toc[i].dataOffset);
+                bs.WriteInt32(toc[i].compressedSize);
+            }
+
+            bs.Position = 0x0C;
+            bs.WriteInt32(tocOffset);
+        }
+
 
     }
 }

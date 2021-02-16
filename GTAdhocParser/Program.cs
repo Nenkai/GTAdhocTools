@@ -51,18 +51,32 @@ namespace GTAdhocTools
                 var gpb = GpbData.CreateFromFolder(packVerbs.InputPath);
                 gpb.Pack(packVerbs.OutputPath, !packVerbs.LittleEndian);
             }
+            else if (packVerbs.OutputPath.EndsWith("mpackage"))
+            {
+                AdhocPackage.PackFromFolder(packVerbs.InputPath, packVerbs.OutputPath);
+            }
+            else
+            {
+                Console.WriteLine("Found nothing to pack - ensure the provided output path has the proper file extension (gpb/mpackage)");
+            }
         }
 
         public static void Unpack(UnpackVerbs unpackVerbs)
         {
             if (unpackVerbs.InputPath.EndsWith("gpb"))
             {
+                Console.WriteLine("Assuming input is GPB");
                 var gpb = GpbData.Read(unpackVerbs.InputPath);
                 gpb.Unpack(Path.GetFileNameWithoutExtension(unpackVerbs.InputPath), unpackVerbs.OutputPath);
             }
             else if (unpackVerbs.InputPath.EndsWith("mpackage"))
             {
-                AdhocPackage.ExtractPackage(unpackVerbs.OutputPath);
+                Console.WriteLine("Assuming input is MPackage");
+                AdhocPackage.ExtractPackage(unpackVerbs.InputPath);
+            }
+            else
+            {
+                Console.WriteLine("Found nothing to unpack - ensure the provided input file has the proper file extension (gpb/mpackage)");
             }
         }
     }
