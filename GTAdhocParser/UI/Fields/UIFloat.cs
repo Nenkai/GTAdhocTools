@@ -14,7 +14,7 @@ namespace GTAdhocTools.UI.Fields
     {
         public float Value { get; set; }
 
-        public override void Read(ref SpanReader sr)
+        public override void Read(ref SpanReader sr, byte version)
         {
             Value = sr.ReadInt32();
         }

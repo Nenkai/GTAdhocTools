@@ -12,6 +12,6 @@ namespace GTAdhocTools.UI.Fields
 {
     public abstract class UIFieldBase
     {
-        public abstract void Read(ref SpanReader sr);
+        public abstract void Read(ref SpanReader sr, byte version);
     }
 }

@@ -21,9 +21,11 @@ namespace GTAdhocTools.UI
             if (magic != "MPRJ")
                 throw new Exception("Invalid magic, expected MPRJ");
 
-            sr.ReadByte();
+            byte version = sr.ReadByte();
             var component = new Scope();
-            component.Read(ref sr);
+            if (version == 1)
+                sr.Position += 1; // Skip scope type
+            component.Read(ref sr, version);
             return component;
         }
     }

@@ -22,19 +22,37 @@ namespace GTAdhocTools.UI
 
         public List<UIComponent> Child { get; set; } = new List<UIComponent>();
 
-        public override void Read(ref SpanReader sr)
+        public override void Read(ref SpanReader sr, byte version)
         {
-            EndScopeOffset = sr.ReadInt32();
-            Name = sr.ReadString1();
-
-            while (sr.Position < EndScopeOffset - 2)
+            if (version == 0)
             {
-                var comp = new UIComponent();
-                comp.Read(ref sr);
-                Child.Add(comp);
-            }
+                EndScopeOffset = sr.ReadInt32();
+                Name = sr.ReadString1();
 
-            Debug.Assert(sr.ReadInt16() == 0x18d, "Scope terminator did not match");
+                while (sr.Position < EndScopeOffset - 2)
+                {
+                    var comp = new UIComponent();
+                    comp.Read(ref sr, version);
+                    Child.Add(comp);
+                }
+
+                Debug.Assert(sr.ReadInt16() == 0x18d, "Scope terminator did not match");
+            }
+            else if (version == 1)
+            {
+                Name = sr.ReadString1();
+                UIComponent comp;
+                do
+                {
+                    comp = new UIComponent();
+                    comp.Read(ref sr, version);
+                    
+                    if (comp.TypeNew != FieldType.ScopeEnd)
+                        Child.Add(comp);
+
+                } while (comp.TypeNew != FieldType.ScopeEnd);
+
+            }
         }
     }
 }

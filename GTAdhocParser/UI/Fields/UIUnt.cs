@@ -10,14 +10,13 @@ using Syroot.BinaryData.Memory;
 
 namespace GTAdhocTools.UI.Fields
 {
-    public class UIString : UIFieldBase
+    public class UIUInt : UIFieldBase
     {
-        public string String { get; set; }
+        public uint Value { get; set; }
 
         public override void Read(ref SpanReader sr, byte version)
         {
-            int strLen = (int)sr.DecodeBitsAndAdvance();
-            String = Encoding.UTF8.GetString(sr.ReadBytes(strLen));
+            Value = sr.ReadUInt32();
         }
     }
 }

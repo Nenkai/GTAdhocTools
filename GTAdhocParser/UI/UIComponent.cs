@@ -19,10 +19,19 @@ namespace GTAdhocTools.UI
         public string FieldName { get; set; }
         public uint OffsetScopeEnd { get; set; }
         public byte Unk { get; set; }
-        public FieldType Type { get; set; }
+        public FieldTypeOld TypeOld { get; set; }
+        public FieldType TypeNew { get; set; }
         public UIFieldBase Field { get; set; }
 
-        public void Read(ref SpanReader sr, bool arrayElement = false)
+        public void Read(ref SpanReader sr, byte version, bool arrayElement = false)
+        {
+            if (version == 0)
+                ReadOld(ref sr, arrayElement);
+            else
+                ReadNew(ref sr);
+        }
+
+        public void ReadOld(ref SpanReader sr, bool arrayElement)
         {
             if (!arrayElement)
             {
@@ -31,9 +40,40 @@ namespace GTAdhocTools.UI
             }
 
             Unk = sr.ReadByte();
-            Type = (FieldType)sr.ReadByte();
+            TypeOld = (FieldTypeOld)sr.ReadByte();
 
-            switch (Type)
+            switch (TypeOld)
+            {
+                case FieldTypeOld.Bool:
+                    Field = new UIBool();
+                    break;
+                case FieldTypeOld.Float:
+                    Field = new UIFloat();
+                    break;
+                case FieldTypeOld.Int:
+                    Field = new UIInt();
+                    break;
+                case FieldTypeOld.String:
+                    Field = new UIString();
+                    break;
+                case FieldTypeOld.ScopeStart:
+                    Field = new UIArray();
+                    break;
+                case FieldTypeOld.ScopeEnd:
+                    Field = new Scope();
+                    break;
+                default:
+                    throw new Exception($"Type: {TypeOld} not supported");
+            }
+
+            Field.Read(ref sr, 0);
+        }
+
+        public void ReadNew(ref SpanReader sr)
+        {
+            TypeNew = (FieldType)sr.ReadByte();
+
+            switch (TypeNew)
             {
                 case FieldType.Bool:
                     Field = new UIBool();
@@ -44,30 +84,53 @@ namespace GTAdhocTools.UI
                 case FieldType.Int:
                     Field = new UIInt();
                     break;
+                case FieldType.UInt:
+                    Field = new UIInt();
+                    break;
+                case FieldType.Color:
+                    Field = new UIColor();
+                    break;
                 case FieldType.String:
                     Field = new UIString();
                     break;
                 case FieldType.ScopeStart:
-                    Field = new UIArray();
+                    Field = new Scope();
                     break;
                 case FieldType.ScopeEnd:
                     Field = new Scope();
                     break;
+                case FieldType.ArrayMaybe:
+                    Field = new UIArray();
+                    break;
                 default:
-                    throw new Exception($"Type: {Type} not supported");
+                    throw new Exception($"Type: {TypeNew} not supported");
             }
 
-            Field.Read(ref sr);
+            if (TypeNew != FieldType.ScopeEnd)
+                Field.Read(ref sr, 1);
         }
+    }
 
-        public enum FieldType
-        {
-            Bool = 0x80,
-            Int = 0x83,
-            Float = 0x89,
-            String = 0x8B,
-            ScopeStart = 0x8C,
-            ScopeEnd = 0x8D,
-        }
+    public enum FieldType
+    {
+        Bool = 1,
+        Int = 4,
+        Color = 6,
+        UInt = 8,
+        Float = 10,
+        String = 12,
+        ArrayMaybe = 13,
+        ScopeStart = 14,
+        ScopeEnd = 15,
+    }
+
+    public enum FieldTypeOld
+    {
+        Bool = 0x80,
+        Int = 0x83,
+        Float = 0x89,
+        String = 0x8B,
+        ScopeStart = 0x8C,
+        ScopeEnd = 0x8D,
     }
 }

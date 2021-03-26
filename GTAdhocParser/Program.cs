@@ -39,9 +39,10 @@ namespace GTAdhocTools
             }
             else
             {
-                Parser.Default.ParseArguments<PackVerbs, UnpackVerbs>(args)
+                Parser.Default.ParseArguments<PackVerbs, UnpackVerbs, UIVerbs>(args)
                     .WithParsed<PackVerbs>(Pack)
-                    .WithParsed<UnpackVerbs>(Unpack);
+                    .WithParsed<UnpackVerbs>(Unpack)
+                    .WithParsed<UIVerbs>(UI);       
             }
         }
 
@@ -80,6 +81,14 @@ namespace GTAdhocTools
                 Console.WriteLine("Found nothing to unpack - ensure the provided input file has the proper file extension (gpb/mpackage)");
             }
         }
+
+        public static void UI(UIVerbs uiVerbs)
+        {
+            if (uiVerbs.InputPath.EndsWith("mproject") || uiVerbs.InputPath.EndsWith("mwidget"))
+            {
+                UIKitFileReader.Read(uiVerbs.InputPath);
+            }
+        }
     }
 
     [Verb("unpack", HelpText = "Unpack files like gpb's, or mpackage's.")]
@@ -105,5 +114,12 @@ namespace GTAdhocTools
         [Option("le", HelpText = "Pack as little endian?")]
         public bool LittleEndian { get; set; }
 
+    }
+
+    [Verb("readui", HelpText = "Read mwidget/mproject")]
+    public class UIVerbs
+    {
+        [Option('i', "input", Required = true, HelpText = "Input folder.")]
+        public string InputPath { get; set; }
     }
 }
