@@ -12,11 +12,16 @@ namespace GTAdhocTools.UI.Fields
 {
     public class UIColor : UIFieldBase
     {
-        public byte[] Value { get; set; }
-
+        public ushort R;
+        public ushort G;
+        public ushort B;
+        public byte A;
         public override void Read(ref SpanReader sr, byte version)
         {
-            Value = sr.ReadBytes(7);
+            R = sr.ReadUInt16();
+            G = sr.ReadUInt16();
+            B = sr.ReadUInt16();
+            A = sr.ReadByte();
         }
     }
 }
