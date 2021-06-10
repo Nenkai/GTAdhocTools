@@ -11,6 +11,25 @@ namespace GTAdhocTools
 {
     public static class Utils
     {
+        public static string Read7BitString(this BinaryStream sr)
+        {
+            ulong strLen = DecodeBitsAndAdvance(sr);
+            return Encoding.UTF8.GetString(sr.ReadBytes((int)strLen));
+        }
+
+        public static ulong DecodeBitsAndAdvance(this BinaryStream sr)
+        {
+            ulong value = (ulong)sr.ReadByte();
+            ulong mask = 0x80;
+
+            while ((value & mask) != 0)
+            {
+                value = ((value - mask) << 8) | (sr.Read1Byte());
+                mask <<= 7;
+            }
+            return value;
+        }
+
         public static ulong DecodeBitsAndAdvance(this ref SpanReader sr)
         {
             ulong value = sr.ReadByte();

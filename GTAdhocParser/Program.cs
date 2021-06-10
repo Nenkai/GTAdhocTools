@@ -86,9 +86,13 @@ namespace GTAdhocTools
         {
             if (uiVerbs.InputPath.EndsWith("mproject") || uiVerbs.InputPath.EndsWith("mwidget"))
             {
-                UIKitFileReader.Read(uiVerbs.InputPath);
+                var mbin = new MBinaryIO(uiVerbs.InputPath);
+                mNode rootNode = mbin.Read();
+
+                using MTextWriter writer = new MTextWriter(uiVerbs.OutputPath);
+                writer.WriteNode(rootNode);
             }
-        }
+        }       
     }
 
     [Verb("unpack", HelpText = "Unpack files like gpb's, or mpackage's.")]
@@ -116,10 +120,13 @@ namespace GTAdhocTools
 
     }
 
-    [Verb("readui", HelpText = "Read mwidget/mproject")]
+    [Verb("ui", HelpText = "Read mwidget/mproject and outputs it to a text file.")]
     public class UIVerbs
     {
         [Option('i', "input", Required = true, HelpText = "Input folder.")]
         public string InputPath { get; set; }
+
+        [Option('o', "output", Required = true, HelpText = "Output folder.")]
+        public string OutputPath { get; set; }
     }
 }
