@@ -14,16 +14,16 @@ namespace GTAdhocTools.Instructions
         
 
         public uint val1;
-        public uint val2;
+        public uint StackRewindIndex;
 
         public override void Deserialize(AdhocFile parent, ref SpanReader sr)
         {
             val1 = sr.ReadUInt32();
-            val2 = sr.ReadUInt32();
+            StackRewindIndex = sr.ReadUInt32();
         }
 
         public override string ToString()
-           => $"{CallType}: V1={val1}, V2={val2}";
+           => $"{CallType}: Unused: {val1}, StackRewindIndex: {StackRewindIndex}";
 
         public override void Decompile(CodeBuilder builder)
         {
