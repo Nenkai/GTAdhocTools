@@ -25,7 +25,7 @@ namespace GTAdhocTools.Instructions
         }
 
         public override string ToString()
-            => $"{CallType}: {string.Join(',', Names)}, ValueEval={Value}";
+            => $"{CallType}: {string.Join(',', Names)}, Push At Stack Index: {Value}";
 
         public override void Decompile(CodeBuilder builder)
         {
