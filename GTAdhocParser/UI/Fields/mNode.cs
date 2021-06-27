@@ -77,6 +77,11 @@ namespace GTAdhocTools.UI
                                 field = new mVector3();
                                 field.Read(io);
                             }
+                            else if (str2.String == "region")
+                            {
+                                field = new mRegion();
+                                field.Read(io);
+                            }
                         }
                         
                         field.Name = str.String;

@@ -94,6 +94,11 @@ namespace GTAdhocTools.UI.Fields
                                 field = new mVector3();
                                 field.Read(io);
                             }
+                            else if (str.String == "region")
+                            {
+                                field = new mRegion();
+                                field.Read(io);
+                            }
                         }
 
                         Elements.Add(field);
