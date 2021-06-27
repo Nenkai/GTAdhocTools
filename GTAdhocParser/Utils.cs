@@ -17,6 +17,12 @@ namespace GTAdhocTools
             return Encoding.UTF8.GetString(sr.ReadBytes((int)strLen));
         }
 
+        public static byte[] Read7BitStringBytes(this BinaryStream sr)
+        {
+            ulong strLen = DecodeBitsAndAdvance(sr);
+            return sr.ReadBytes((int)strLen);
+        }
+
         public static ulong DecodeBitsAndAdvance(this BinaryStream sr)
         {
             ulong value = (ulong)sr.ReadByte();

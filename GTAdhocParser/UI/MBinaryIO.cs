@@ -32,14 +32,32 @@ namespace GTAdhocTools.UI
             Stream = new BinaryStream(file, ByteConverter.Big);
 
             string magic = Stream.ReadString(4);
-            if (magic != "MPRJ")
-                throw new Exception("Invalid magic, expected MPRJ");
+            if (magic == "Proj")
+            {
+                Console.WriteLine("This is already text version of an mproject/widget.");
+                return null;
+            }
+            else if (magic != "MPRJ")
+            {
+                Console.WriteLine($"Not a MPRJ Binary file.");
+                return null;
+            }
 
             Version = (byte)Stream.DecodeBitsAndAdvance();
+            if (Version != 0 && Version != 1)
+            {
+                Console.WriteLine($"Unsupported MPRJ Version {Version}.");
+                return null;
+            }
+
             var rootPrjNode = new mNode();
+            rootPrjNode.IsRoot = true; // For version 0
             if (Version == 1)
                 Stream.Position += 1; // Skip scope type
+
+            Console.WriteLine($"MPRJ Version: {Version}");
             rootPrjNode.Read(this);
+
             return rootPrjNode;
         }
 
@@ -56,51 +74,9 @@ namespace GTAdhocTools.UI
         public mTypeBase Read(bool arrayElement = false)
         {
             if (Version == 0)
-                return ReadOld(arrayElement);
+                throw new NotSupportedException("Unsupported for MPRJ version 1");
             else
                 return ReadNew();
-        }
-
-        private mTypeBase ReadOld(bool arrayElement)
-        {
-            mTypeBase field = null;
-
-            string fieldName = null;
-            uint offsetScopeEnd;
-
-            if (!arrayElement)
-            {
-                fieldName = Stream.Read7BitString();
-                offsetScopeEnd = Stream.ReadUInt32();
-            }
-
-            FieldTypeOld typeOld = (FieldTypeOld)Stream.DecodeBitsAndAdvance();
-
-            switch (typeOld)
-            {
-                case FieldTypeOld.Bool:
-                    field = new mBool();
-                    break;
-                case FieldTypeOld.Float:
-                    field = new mFloat();
-                    break;
-                case FieldTypeOld.Int:
-                    field = new mInt();
-                    break;
-                case FieldTypeOld.String:
-                    field = new mString();
-                    break;
-                case FieldTypeOld.ScopeStart:
-                    field = new UIArray();
-                    break;
-                case FieldTypeOld.ScopeEnd:
-                    break;
-                default:
-                    throw new Exception($"Type: {typeOld} not supported");
-            }
-
-            field.Read(this);
-            return field;
         }
 
         private mTypeBase ReadNew()
@@ -138,7 +114,7 @@ namespace GTAdhocTools.UI
                 case FieldType.ScopeEnd:
                     break;
                 case FieldType.ArrayMaybe:
-                    field = new UIArray();
+                    field = new mArray();
                     break;
                 default:
                     throw new Exception($"Type: {typeNew} not supported");
@@ -154,11 +130,15 @@ namespace GTAdhocTools.UI
     public enum FieldType
     {
         Bool = 1,
+        SByte = 2,
+        Short = 3,
         Int = 4,
+        Long = 5,
         UByte = 6,
-        Short = 7,
+        UShort = 7,
         UInt = 8,
         Float = 10,
+        ULong = 11,
         String = 12,
         ArrayMaybe = 13,
         ScopeStart = 14,
@@ -168,10 +148,18 @@ namespace GTAdhocTools.UI
     public enum FieldTypeOld
     {
         Bool = 0x80,
+        SByte = 0x81,
+        Short = 0x82,
         Int = 0x83,
+        Long = 0x84,
+        Byte = 0x85,
+        UShort = 0x86,
+        UInt = 0x87,
+        ULong = 0x88,
         Float = 0x89,
+        Double = 0x8A,
         String = 0x8B,
-        ScopeStart = 0x8C,
+        Array = 0x8C,
         ScopeEnd = 0x8D,
     }
 }

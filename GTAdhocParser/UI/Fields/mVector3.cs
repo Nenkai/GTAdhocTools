@@ -21,9 +21,18 @@ namespace GTAdhocTools.UI.Fields
 
         public override void Read(MBinaryIO io)
         {
-            X = (io.ReadNext() as mFloat).Value;
-            Y = (io.ReadNext() as mFloat).Value;
-            Z = (io.ReadNext() as mFloat).Value;
+            if (io.Version == 0)
+            {
+                X = io.Stream.ReadSingle();
+                Y = io.Stream.ReadSingle();
+                Z = io.Stream.ReadSingle();
+            }
+            else
+            {
+                X = (io.ReadNext() as mFloat).Value;
+                Y = (io.ReadNext() as mFloat).Value;
+                Z = (io.ReadNext() as mFloat).Value;
+            }
         }
 
         public override void WriteText(MTextWriter writer)

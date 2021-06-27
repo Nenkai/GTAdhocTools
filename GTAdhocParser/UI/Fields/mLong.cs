@@ -11,14 +11,14 @@ using System.Diagnostics;
 
 namespace GTAdhocTools.UI.Fields
 {
-    [DebuggerDisplay("mUInt: {Name} ({Value})")]
-    public class mUInt : mTypeBase
+    [DebuggerDisplay("mLong: {Name} ({Value})")]
+    public class mLong : mTypeBase
     {
-        public uint Value { get; set; }
+        public long Value { get; set; }
 
         public override void Read(MBinaryIO io)
         {
-            Value = io.Stream.ReadUInt32();
+            Value = io.Stream.ReadInt64();
         }
 
         public override void WriteText(MTextWriter writer)

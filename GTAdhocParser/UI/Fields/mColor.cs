@@ -19,10 +19,20 @@ namespace GTAdhocTools.UI.Fields
 
         public override void Read(MBinaryIO io)
         {
-            R = (io.ReadNext() as mUByte).Value;
-            G = (io.ReadNext() as mUByte).Value;
-            B = (io.ReadNext() as mUByte).Value;
-            A = (io.ReadNext() as mUByte).Value;
+            if (io.Version == 0)
+            {
+                R = io.Stream.Read1Byte();
+                G = io.Stream.Read1Byte();
+                B = io.Stream.Read1Byte();
+                A = io.Stream.Read1Byte();
+            }
+            else
+            {
+                R = (io.ReadNext() as mUByte).Value;
+                G = (io.ReadNext() as mUByte).Value;
+                B = (io.ReadNext() as mUByte).Value;
+                A = (io.ReadNext() as mUByte).Value;
+            }
         }
 
         public override void WriteText(MTextWriter writer)

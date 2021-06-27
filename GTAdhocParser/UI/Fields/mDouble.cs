@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Globalization;
 
 using Syroot.BinaryData.Core;
 using Syroot.BinaryData;
@@ -11,14 +12,14 @@ using System.Diagnostics;
 
 namespace GTAdhocTools.UI.Fields
 {
-    [DebuggerDisplay("mUInt: {Name} ({Value})")]
-    public class mUInt : mTypeBase
+    [DebuggerDisplay("mDouble: {Name} ({Value})")]
+    public class mDouble : mTypeBase
     {
-        public uint Value { get; set; }
+        public double Value { get; set; }
 
         public override void Read(MBinaryIO io)
         {
-            Value = io.Stream.ReadUInt32();
+            Value = io.Stream.ReadDouble();
         }
 
         public override void WriteText(MTextWriter writer)
@@ -26,7 +27,7 @@ namespace GTAdhocTools.UI.Fields
             writer.WriteString(Name);
             writer.WriteSpace();
             writer.WriteString("digit");
-            writer.WriteString("{"); writer.WriteString(Value.ToString()); writer.WriteString("}");
+            writer.WriteString("{"); writer.WriteString(Value.ToString(CultureInfo.InvariantCulture)); writer.WriteString("}");
             writer.SetNeedNewLine();
         }
     }

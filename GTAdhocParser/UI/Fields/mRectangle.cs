@@ -7,33 +7,43 @@ using System.Diagnostics;
 
 namespace GTAdhocTools.UI.Fields
 {
-    [DebuggerDisplay("mRectangle: {Name} ({X1},{Y1},{X2},{Y2})")]
+    [DebuggerDisplay("mRectangle: {Name} (X:{X1},Y:{Y1},W:{X2},H:{Y2})")]
     public class mRectangle : mTypeBase
     {
         public override void Read(MBinaryIO io)
         {
-            mFloat x1 = io.ReadNext() as mFloat;
-            mFloat y1 = io.ReadNext() as mFloat;
-            mFloat x2 = io.ReadNext() as mFloat;
-            mFloat y2 = io.ReadNext() as mFloat;
+            if (io.Version == 0)
+            {
+                X = io.Stream.ReadSingle();
+                Y = io.Stream.ReadSingle();
+                Width = io.Stream.ReadSingle();
+                Height = io.Stream.ReadSingle();
+            }
+            else
+            {
+                mFloat x = io.ReadNext() as mFloat;
+                mFloat y = io.ReadNext() as mFloat;
+                mFloat width = io.ReadNext() as mFloat;
+                mFloat height = io.ReadNext() as mFloat;
 
-            X1 = x1.Value;
-            Y1 = y1.Value;
-            X2 = x2.Value;
-            Y2 = y2.Value;
+                X = x.Value;
+                Y = y.Value;
+                Width = width.Value;
+                Height = height.Value;
+            }
         }
 
-        public float X1 { get; set; }
-        public float Y1 { get; set; }
-        public float X2 { get; set; }
-        public float Y2 { get; set; }
+        public float X { get; set; }
+        public float Y { get; set; }
+        public float Width { get; set; }
+        public float Height { get; set; }
 
         public override void WriteText(MTextWriter writer)
         {
             writer.WriteString(Name);
             writer.WriteSpace();
             writer.WriteString("rectangle");
-            writer.WriteString("{"); writer.WriteString($"{X1} {Y1} {X2} {Y2}"); writer.WriteString("}");
+            writer.WriteString("{"); writer.WriteString($"{X} {Y} {Width} {Height}"); writer.WriteString("}");
             writer.SetNeedNewLine();
         }
     }

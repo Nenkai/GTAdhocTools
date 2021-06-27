@@ -12,7 +12,7 @@ using System.Diagnostics;
 namespace GTAdhocTools.UI.Fields
 {
     [DebuggerDisplay("mNodeArray: {Name} ({Length} elements)")]
-    public class UIArray : mTypeBase
+    public class mArray : mTypeBase
     {
         public byte Length { get; set; }
         public List<mTypeBase> Elements { get; set; }
@@ -25,9 +25,55 @@ namespace GTAdhocTools.UI.Fields
             {
                 if (io.Version == 0)
                 {
-                    mNode scope = new mNode();
-                    scope.Read(io);
-                    Elements.Add(scope);
+                    int endScope = io.Stream.ReadInt32();
+                    byte[] typeName = io.Stream.Read7BitStringBytes();
+
+                    mTypeBase element;
+                    if (typeName.Length == 1)
+                    {
+                        element = (FieldTypeOld)typeName[0] switch
+                        {
+                            FieldTypeOld.String => new mString(),
+                            FieldTypeOld.Array => new mArray(),
+                            FieldTypeOld.Bool => new mBool(),
+                            FieldTypeOld.Byte => new mUByte(),
+                            FieldTypeOld.Double => new mDouble(),
+                            FieldTypeOld.Float => new mFloat(),
+                            FieldTypeOld.Long => new mLong(),
+                            FieldTypeOld.SByte => new mSByte(),
+                            FieldTypeOld.Short => new mShort(),
+                            FieldTypeOld.UShort => new mUShort(),
+                            FieldTypeOld.ULong => new mULong(),
+                            FieldTypeOld.Int => new mInt(),
+                            FieldTypeOld.UInt => new mUInt(),
+                            _ => throw new NotSupportedException($"Received unsupported array element type {(FieldTypeOld)typeName[0]}"),
+                        };
+                    }
+                    else
+                    {
+                        string customFieldType = Encoding.UTF8.GetString(typeName);
+
+                        element = customFieldType switch
+                        {
+                            "rectangle" => new mRectangle(),
+                            "RGBA" => new mColor(),
+                            "color_name" => new mColorName(),
+                            "vector" => new mVector(),
+                            "vector3" => new mVector3(),
+                            "region" => new mRegion(),
+                            _ => null,
+                        };
+
+                        if (element is null)
+                        {
+                            element = new mNode();
+                            ((mNode)element).EndScopeOffset = endScope;
+                            ((mNode)element).TypeName = customFieldType;
+                        }
+                    }
+
+                    element.Read(io);
+                    Elements.Add(element);
                 }
                 else
                 {
@@ -48,7 +94,7 @@ namespace GTAdhocTools.UI.Fields
                             field = new mShort();
                             break;
                         case FieldType.UInt:
-                            field = new UIUInt();
+                            field = new mUInt();
                             break;
                         case FieldType.UByte:
                             field = new mUByte();
@@ -62,7 +108,7 @@ namespace GTAdhocTools.UI.Fields
                         case FieldType.ScopeEnd:
                             break;
                         case FieldType.ArrayMaybe:
-                            field = new UIArray();
+                            field = new mArray();
                             break;
                         default:
                             throw new Exception($"Type: {type} not supported");

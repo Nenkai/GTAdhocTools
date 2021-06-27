@@ -16,7 +16,10 @@ namespace GTAdhocTools.UI.Fields
 
         public override void Read(MBinaryIO io)
         {
-            ColorName = (io.ReadNext() as mString).String;
+            if (io.Version == 0)
+                ColorName = io.Stream.Read7BitString();
+            else
+                ColorName = (io.ReadNext() as mString).String;
         }
 
         public override void WriteText(MTextWriter writer)

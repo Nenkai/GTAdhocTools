@@ -13,12 +13,6 @@ namespace GTAdhocTools
     {
         static void Main(string[] args)
         {
-            if (args.Length == 0)
-            {
-                Console.WriteLine("No arguments provided.");
-                return;
-            }
-
             if (args[0].EndsWith(".adc"))
             {
                 AdhocFile adc = null;
@@ -36,6 +30,15 @@ namespace GTAdhocTools
 
                 if (adc.Version == 12)
                     adc.PrintStrings(Path.ChangeExtension(args[0], ".strings"));
+            }
+            else if (args[0].EndsWith(".gpb"))
+            {
+                var gpb = GpbData.Read(args[0]);
+
+                string fileName = Path.GetFileNameWithoutExtension(args[0]);
+                string dir = Path.GetDirectoryName(args[0]);
+
+                gpb.Unpack(Path.GetFileNameWithoutExtension(args[0]), null);
             }
             else
             {
@@ -88,6 +91,9 @@ namespace GTAdhocTools
             {
                 var mbin = new MBinaryIO(uiVerbs.InputPath);
                 mNode rootNode = mbin.Read();
+
+                if (rootNode is null)
+                    return;
 
                 using MTextWriter writer = new MTextWriter(uiVerbs.OutputPath);
                 writer.WriteNode(rootNode);

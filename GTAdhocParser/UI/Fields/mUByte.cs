@@ -23,8 +23,11 @@ namespace GTAdhocTools.UI.Fields
 
         public override void WriteText(MTextWriter writer)
         {
-            throw new NotImplementedException();
-
+            writer.WriteString(Name);
+            writer.WriteSpace();
+            writer.WriteString("digit");
+            writer.WriteString("{"); writer.WriteString(Value.ToString()); writer.WriteString("}");
+            writer.SetNeedNewLine();
         }
     }
 }

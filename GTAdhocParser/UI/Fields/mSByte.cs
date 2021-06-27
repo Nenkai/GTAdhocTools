@@ -11,14 +11,14 @@ using System.Diagnostics;
 
 namespace GTAdhocTools.UI.Fields
 {
-    [DebuggerDisplay("mUInt: {Name} ({Value})")]
-    public class mUInt : mTypeBase
+    [DebuggerDisplay("mSByte: {Name} ({Value})")]
+    public class mSByte : mTypeBase
     {
-        public uint Value { get; set; }
+        public sbyte Value { get; set; }
 
         public override void Read(MBinaryIO io)
         {
-            Value = io.Stream.ReadUInt32();
+            Value = io.Stream.ReadSByte();
         }
 
         public override void WriteText(MTextWriter writer)

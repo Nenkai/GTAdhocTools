@@ -12,15 +12,25 @@ namespace GTAdhocTools.UI.Fields
     {
         public override void Read(MBinaryIO io)
         {
-            mFloat x1 = io.ReadNext() as mFloat;
-            mFloat y1 = io.ReadNext() as mFloat;
-            mFloat x2 = io.ReadNext() as mFloat;
-            mFloat y2 = io.ReadNext() as mFloat;
+            if (io.Version == 0)
+            {
+                X1 = io.Stream.ReadSingle();
+                Y1 = io.Stream.ReadSingle();
+                X2 = io.Stream.ReadSingle();
+                Y2 = io.Stream.ReadSingle();
+            }
+            else
+            {
+                mFloat x1 = io.ReadNext() as mFloat;
+                mFloat y1 = io.ReadNext() as mFloat;
+                mFloat x2 = io.ReadNext() as mFloat;
+                mFloat y2 = io.ReadNext() as mFloat;
 
-            X1 = x1.Value;
-            Y1 = y1.Value;
-            X2 = x2.Value;
-            Y2 = y2.Value;
+                X1 = x1.Value;
+                Y1 = y1.Value;
+                X2 = x2.Value;
+                Y2 = y2.Value;
+            }
         }
 
         public float X1 { get; set; }
