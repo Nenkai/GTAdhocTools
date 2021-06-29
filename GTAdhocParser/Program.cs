@@ -7,53 +7,64 @@ using GTAdhocTools.UI;
 using CommandLine;
 using CommandLine.Text;
 
+using GTAdhocTools.Gpb;
+
 namespace GTAdhocTools
 {
     class Program
     {
         static void Main(string[] args)
         {
-            if (args[0].EndsWith(".adc"))
+            if (args.Length == 1)
             {
-                AdhocFile adc = null;
-                bool withOffset = true;
-                try
+                if (args[0].ToLower().EndsWith(".adc"))
                 {
-                    adc = AdhocFile.ReadFromFile(args[0]);
+                    AdhocFile adc = null;
+                    bool withOffset = true;
+                    try
+                    {
+                        adc = AdhocFile.ReadFromFile(args[0]);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine($"Errored while reading: {e.Message}");
+                    }
+
+                    adc.Disassemble(Path.ChangeExtension(args[0], ".ad"), withOffset);
+
+                    if (adc.Version == 12)
+                        adc.PrintStrings(Path.ChangeExtension(args[0], ".strings"));
                 }
-                catch (Exception e)
+                else if (args[0].ToLower().EndsWith(".gpb"))
                 {
-                    Console.WriteLine($"Errored while reading: {e.Message}");
+                    var gpb = GpbBase.ReadFile(args[0]);
+                    if (gpb is null)
+                    {
+                        Console.WriteLine("Could not parse GPB Header.");
+                        return;
+                    }
+
+                    string fileName = Path.GetFileNameWithoutExtension(args[0]);
+                    string dir = Path.GetDirectoryName(args[0]);
+
+                    gpb.Unpack(Path.GetFileNameWithoutExtension(args[0]), null);
                 }
-
-                adc.Disassemble(Path.ChangeExtension(args[0], ".ad"), withOffset);
-
-                if (adc.Version == 12)
-                    adc.PrintStrings(Path.ChangeExtension(args[0], ".strings"));
-            }
-            else if (args[0].EndsWith(".gpb"))
-            {
-                var gpb = GpbData.Read(args[0]);
-
-                string fileName = Path.GetFileNameWithoutExtension(args[0]);
-                string dir = Path.GetDirectoryName(args[0]);
-
-                gpb.Unpack(Path.GetFileNameWithoutExtension(args[0]), null);
             }
             else
             {
                 Parser.Default.ParseArguments<PackVerbs, UnpackVerbs, UIVerbs>(args)
                     .WithParsed<PackVerbs>(Pack)
                     .WithParsed<UnpackVerbs>(Unpack)
-                    .WithParsed<UIVerbs>(UI);       
+                    .WithParsed<UIVerbs>(UI);
             }
         }
 
         public static void Pack(PackVerbs packVerbs)
         {
-            if (packVerbs.OutputPath.EndsWith("gpb"))
+            if (packVerbs.OutputPath.ToLower().EndsWith("gpb"))
             {
-                var gpb = GpbData.CreateFromFolder(packVerbs.InputPath);
+                var gpb = new GpbData3();
+                gpb.AddFilesFromFolder(packVerbs.InputPath);
                 gpb.Pack(packVerbs.OutputPath, !packVerbs.LittleEndian);
             }
             else if (packVerbs.OutputPath.EndsWith("mpackage"))
@@ -68,10 +79,16 @@ namespace GTAdhocTools
 
         public static void Unpack(UnpackVerbs unpackVerbs)
         {
-            if (unpackVerbs.InputPath.EndsWith("gpb"))
+            if (unpackVerbs.InputPath.ToLower().EndsWith("gpb"))
             {
                 Console.WriteLine("Assuming input is GPB");
-                var gpb = GpbData.Read(unpackVerbs.InputPath);
+                var gpb = GpbBase.ReadFile(unpackVerbs.InputPath);
+                if (gpb is null)
+                {
+                    Console.WriteLine("Could not parse GPB Header.");
+                    return;
+                }
+
                 gpb.Unpack(Path.GetFileNameWithoutExtension(unpackVerbs.InputPath), unpackVerbs.OutputPath);
             }
             else if (unpackVerbs.InputPath.EndsWith("mpackage"))
@@ -87,7 +104,7 @@ namespace GTAdhocTools
 
         public static void UI(UIVerbs uiVerbs)
         {
-            if (uiVerbs.InputPath.EndsWith("mproject") || uiVerbs.InputPath.EndsWith("mwidget"))
+            if (uiVerbs.InputPath.ToLower().EndsWith("mproject") || uiVerbs.InputPath.ToLower().EndsWith("mwidget"))
             {
                 var mbin = new MBinaryIO(uiVerbs.InputPath);
                 mNode rootNode = mbin.Read();
