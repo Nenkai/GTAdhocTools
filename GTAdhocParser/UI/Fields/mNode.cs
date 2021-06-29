@@ -108,7 +108,7 @@ namespace GTAdhocTools.UI
                         io.CurrentKeyName = str.String;
                         field = io.ReadNext();
                         
-                        if (field is mString str2)
+                        if (field is mString str2 && io.CurrentKeyName != "name")
                         {
                             // Specific types, kind of hardcoded
                             if (str2.String == "rectangle")

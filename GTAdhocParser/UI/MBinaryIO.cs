@@ -84,41 +84,24 @@ namespace GTAdhocTools.UI
             mTypeBase field = null;
             FieldType typeNew = (FieldType)Stream.DecodeBitsAndAdvance();
 
-
-            switch (typeNew)
+            field = typeNew switch
             {
-                case FieldType.UByte:
-                    field = new mUByte();
-                    break;
-                case FieldType.Bool:
-                    field = new mBool();
-                    break;
-                case FieldType.Short:
-                    field = new mShort();
-                    break;
-                case FieldType.Float:
-                    field = new mFloat();
-                    break;
-                case FieldType.Int:
-                    field = new mInt();
-                    break;
-                case FieldType.UInt:
-                    field = new mInt();
-                    break;
-                case FieldType.String:
-                    field = new mString();
-                    break;
-                case FieldType.ScopeStart:
-                    field = new mNode();
-                    break;
-                case FieldType.ScopeEnd:
-                    break;
-                case FieldType.ArrayMaybe:
-                    field = new mArray();
-                    break;
-                default:
-                    throw new Exception($"Type: {typeNew} not supported");
-            }
+                FieldType.UByte => new mUByte(),
+                FieldType.Bool => new mBool(),
+                FieldType.Short => new mShort(),
+                FieldType.UShort => new mUShort(),
+                FieldType.Float => new mFloat(),
+                FieldType.ULong => new mULong(),
+                FieldType.Long => new mLong(),
+                FieldType.Int => new mInt(),
+                FieldType.UInt => new mUInt(),
+                FieldType.String => new mString(),
+                FieldType.ArrayMaybe => new mArray(),
+                FieldType.ScopeStart => new mNode(),
+                FieldType.ScopeEnd => null,
+                FieldType.SByte => new mSByte(),
+                _ => throw new Exception($"Type: {typeNew} not supported"),
+            };
 
             if (typeNew != FieldType.ScopeEnd)
                 field.Read(this);
