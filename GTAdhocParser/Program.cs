@@ -110,9 +110,13 @@ namespace GTAdhocTools
                 mNode rootNode = mbin.Read();
 
                 if (rootNode is null)
+                {
+                    Console.WriteLine("Could not read mproject/mwidget file.");
                     return;
+                }
 
                 using MTextWriter writer = new MTextWriter(uiVerbs.OutputPath);
+                writer.Debug = uiVerbs.Debug;
                 writer.WriteNode(rootNode);
             }
         }       
@@ -151,5 +155,8 @@ namespace GTAdhocTools
 
         [Option('o', "output", Required = true, HelpText = "Output folder.")]
         public string OutputPath { get; set; }
+
+        [Option("d", "debug", HelpText = "Write debug info to the output text file. Note: This will produce a non-working text mproject file.")]
+        public bool Debug { get; set; }
     }
 }

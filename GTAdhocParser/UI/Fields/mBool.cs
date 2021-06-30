@@ -27,6 +27,10 @@ namespace GTAdhocTools.UI.Fields
             writer.WriteSpace();
             writer.WriteString("digit");
             writer.WriteString("{"); writer.WriteString(Value ? "1" : "0"); writer.WriteString("}");
+
+            if (writer.Debug)
+                writer.WriteString(" // mBool");
+
             writer.SetNeedNewLine();
         }
     }

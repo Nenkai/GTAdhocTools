@@ -28,6 +28,10 @@ namespace GTAdhocTools.UI.Fields
             writer.WriteSpace();
             writer.WriteString("digit");
             writer.WriteString("{"); writer.WriteString(Value.ToString(CultureInfo.InvariantCulture)); writer.WriteString("}");
+
+            if (writer.Debug)
+                writer.WriteString(" // mDouble");
+
             writer.SetNeedNewLine();
         }
     }

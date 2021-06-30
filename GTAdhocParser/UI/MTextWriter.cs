@@ -34,6 +34,7 @@ namespace GTAdhocTools.UI
 
         private bool _needNewLine;
 
+        public bool Debug { get; set; }
 
         public MTextWriter(string fileName)
         {
