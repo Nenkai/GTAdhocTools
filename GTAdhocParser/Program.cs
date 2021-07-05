@@ -104,22 +104,19 @@ namespace GTAdhocTools
 
         public static void UI(UIVerbs uiVerbs)
         {
-            if (uiVerbs.InputPath.ToLower().EndsWith("mproject") || uiVerbs.InputPath.ToLower().EndsWith("mwidget"))
+            var mbin = new MBinaryIO(uiVerbs.InputPath);
+            mNode rootNode = mbin.Read();
+
+            if (rootNode is null)
             {
-                var mbin = new MBinaryIO(uiVerbs.InputPath);
-                mNode rootNode = mbin.Read();
-
-                if (rootNode is null)
-                {
-                    Console.WriteLine("Could not read mproject/mwidget file.");
-                    return;
-                }
-
-                using MTextWriter writer = new MTextWriter(uiVerbs.OutputPath);
-                writer.Debug = uiVerbs.Debug;
-                writer.WriteNode(rootNode);
+                Console.WriteLine("Could not read mproject/mwidget file.");
+                return;
             }
-        }       
+
+            using MTextWriter writer = new MTextWriter(uiVerbs.OutputPath);
+            writer.Debug = uiVerbs.Debug;
+            writer.WriteNode(rootNode);
+        }
     }
 
     [Verb("unpack", HelpText = "Unpack files like gpb's, or mpackage's.")]

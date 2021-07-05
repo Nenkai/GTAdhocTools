@@ -48,7 +48,7 @@ namespace GTAdhocTools.Gpb
 
                 bs.Position = fileNameOffset;
                 var file = new GpbPair();
-                file.FileName = bs.ReadString(StringCoding.Raw);
+                file.FileName = bs.ReadString(StringCoding.ZeroTerminated);
 
                 bs.Position = fileDataOffset;
                 file.FileData = bs.ReadBytes(fileSize);
