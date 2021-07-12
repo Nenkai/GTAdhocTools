@@ -22,6 +22,11 @@ namespace GTAdhocTools.UI.Fields
                 ColorName = (io.ReadNext() as mString).String;
         }
 
+        public override void Read(MTextIO io)
+        {
+            throw new NotImplementedException();
+        }
+
         public override void WriteText(MTextWriter writer)
         {
             if (Name != null)

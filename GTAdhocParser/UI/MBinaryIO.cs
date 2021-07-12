@@ -34,7 +34,7 @@ namespace GTAdhocTools.UI
             string magic = Stream.ReadString(4);
             if (magic == "Proj")
             {
-                Console.WriteLine("This is already text version of an mproject/widget.");
+                // Text version
                 return null;
             }
             else if (magic != "MPRJ")
@@ -57,6 +57,8 @@ namespace GTAdhocTools.UI
 
             Console.WriteLine($"MPRJ Version: {Version}");
             rootPrjNode.Read(this);
+
+            Stream.Dispose();
 
             return rootPrjNode;
         }

@@ -21,6 +21,15 @@ namespace GTAdhocTools.UI.Fields
             String = io.Stream.Read7BitString();
         }
 
+        public override void Read(MTextIO io)
+        {
+            String = io.GetString();
+
+            string end = io.GetToken();
+            if (end != MTextIO.SCOPE_END.ToString())
+                throw new UISyntaxError($"Expected string scope end ({MTextIO.SCOPE_END}), got {end}");
+        }
+
         public override void WriteText(MTextWriter writer)
         {
             writer.WriteString(Name);

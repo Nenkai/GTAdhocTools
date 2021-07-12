@@ -17,6 +17,9 @@ namespace GTAdhocTools.UI.Fields
         public FieldType TypeNew { get; set; }
 
         public abstract void Read(MBinaryIO io);
+
+        public abstract void Read(MTextIO io);
+
         public abstract void WriteText(MTextWriter writer);
 
     }

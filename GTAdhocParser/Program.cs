@@ -109,8 +109,14 @@ namespace GTAdhocTools
 
             if (rootNode is null)
             {
-                Console.WriteLine("Could not read mproject/mwidget file.");
-                return;
+                var mtext = new MTextIO(uiVerbs.InputPath);
+                rootNode = mtext.Read();
+                
+                if (rootNode is null)
+                {
+                    Console.WriteLine("Could not read mproject.");
+                    return;
+                }
             }
 
             using MTextWriter writer = new MTextWriter(uiVerbs.OutputPath);

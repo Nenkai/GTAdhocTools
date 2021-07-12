@@ -22,6 +22,11 @@ namespace GTAdhocTools.UI.Fields
             Value = io.Stream.ReadDouble();
         }
 
+        public override void Read(MTextIO io)
+        {
+            throw new NotImplementedException();
+        }
+
         public override void WriteText(MTextWriter writer)
         {
             writer.WriteString(Name);

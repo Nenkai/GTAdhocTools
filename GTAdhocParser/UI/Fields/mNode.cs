@@ -153,6 +153,99 @@ namespace GTAdhocTools.UI
             }
         }
 
+        public override void Read(MTextIO io)
+        {
+            string token = null;
+            string token2 = null;
+
+            if (IsRoot)
+            {
+                token = io.GetToken();
+                token2 = io.GetToken();
+
+                if (token2 == MTextIO.SCOPE_START.ToString())
+                {
+                    // We only have the type
+                    TypeName = token;
+                }
+                else
+                {
+                    Name = token;
+                    TypeName = token2;
+                    string token3 = io.GetToken();
+                    if (token3 != MTextIO.SCOPE_START.ToString())
+                        throw new Exception($"Expected '{MTextIO.SCOPE_START}' character for node definition.");
+
+                }
+            }
+
+            mTypeBase field = null;
+            while (true)
+            {
+                // Loop through all fields, now
+                token = io.GetToken();
+                if (token == MTextIO.SCOPE_END.ToString())
+                    break;
+
+                token2 = io.GetToken();
+
+                if (token2 == MTextIO.SCOPE_START.ToString())
+                {
+                    // We only have the type
+                    field = new mNode();
+                    ((mNode)field).TypeName = token;
+                }
+                else if (token2.StartsWith(MTextIO.ARRAY_START)) // Array def
+                {
+                    Name = token;
+                    int arrLen = int.Parse(token2.AsSpan(0, token2.Length - 2));
+                    if (arrLen > byte.MaxValue)
+                        throw new UISyntaxError($"Array length can only be {byte.MaxValue} elements maximum. Got {arrLen}.");
+
+                    field = new mArray();
+                    ((mArray)field).Length = (byte)arrLen;
+
+                    if (io.GetToken() != MTextIO.SCOPE_START.ToString())
+                        throw new Exception($"Expected '{MTextIO.SCOPE_START}' character for node array field definition.");
+                }
+                else
+                {
+                    Name = token;
+                    TypeName = token2;
+                    string token3 = io.GetToken();
+                    if (token3 != MTextIO.SCOPE_START.ToString())
+                        throw new Exception($"Expected '{MTextIO.SCOPE_START}' character for node field definition.");
+
+                    if (TypeName == "digit")
+                    {
+
+                    }
+                    else
+                    {
+                        field = TypeName switch
+                        {
+                            "string" => new mString(),
+                            "region" => new mRegion(),
+                            "vector2" => new mVector(),
+                            "vector3" => new mVector3(),
+                            "rectangle" => new mRectangle(),
+                            _ => new mNode(),
+                        };
+
+                    }
+
+                    if (field is mNode)
+                    {
+                        ((mNode)field).TypeName = token2;
+                    }
+
+                    field.Name = token;
+                }
+
+                field.Read(io);
+            }
+        }
+
         public override void WriteText(MTextWriter writer)
         {
             if (!string.IsNullOrEmpty(Name))

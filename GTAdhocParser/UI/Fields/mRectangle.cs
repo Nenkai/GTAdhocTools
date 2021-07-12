@@ -7,9 +7,14 @@ using System.Diagnostics;
 
 namespace GTAdhocTools.UI.Fields
 {
-    [DebuggerDisplay("mRectangle: {Name} (X:{X1},Y:{Y1},W:{X2},H:{Y2})")]
+    [DebuggerDisplay("mRectangle: {Name} (X:{X1},Y:{Y1},W:{Width},H:{Height})")]
     public class mRectangle : mTypeBase
     {
+        public float X { get; set; }
+        public float Y { get; set; }
+        public float Width { get; set; }
+        public float Height { get; set; }
+
         public override void Read(MBinaryIO io)
         {
             if (io.Version == 0)
@@ -33,10 +38,10 @@ namespace GTAdhocTools.UI.Fields
             }
         }
 
-        public float X { get; set; }
-        public float Y { get; set; }
-        public float Width { get; set; }
-        public float Height { get; set; }
+        public override void Read(MTextIO io)
+        {
+            throw new NotImplementedException();
+        }
 
         public override void WriteText(MTextWriter writer)
         {

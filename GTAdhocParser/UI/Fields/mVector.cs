@@ -17,6 +17,7 @@ namespace GTAdhocTools.UI.Fields
     {
         public float X { get; set; }
         public float Y { get; set; }
+
         public override void Read(MBinaryIO io)
         {
             if (io.Version == 0)
@@ -29,6 +30,11 @@ namespace GTAdhocTools.UI.Fields
                 X = (io.ReadNext() as mFloat).Value;
                 Y = (io.ReadNext() as mFloat).Value;
             }
+        }
+
+        public override void Read(MTextIO io)
+        {
+            throw new NotImplementedException();
         }
 
         public override void WriteText(MTextWriter writer)

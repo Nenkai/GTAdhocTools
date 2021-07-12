@@ -137,6 +137,11 @@ namespace GTAdhocTools.UI.Fields
             }
         }
 
+        public override void Read(MTextIO io)
+        {
+            throw new NotImplementedException();
+        }
+
         public override void WriteText(MTextWriter writer)
         {
             writer.WriteString(Name);

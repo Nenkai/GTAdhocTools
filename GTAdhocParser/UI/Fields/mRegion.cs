@@ -10,6 +10,11 @@ namespace GTAdhocTools.UI.Fields
     [DebuggerDisplay("mRegion: {Name} ({X1},{Y1},{X2},{Y2})")]
     public class mRegion : mTypeBase
     {
+        public float X1 { get; set; }
+        public float Y1 { get; set; }
+        public float X2 { get; set; }
+        public float Y2 { get; set; }
+
         public override void Read(MBinaryIO io)
         {
             if (io.Version == 0)
@@ -33,10 +38,10 @@ namespace GTAdhocTools.UI.Fields
             }
         }
 
-        public float X1 { get; set; }
-        public float Y1 { get; set; }
-        public float X2 { get; set; }
-        public float Y2 { get; set; }
+        public override void Read(MTextIO io)
+        {
+            throw new NotImplementedException();
+        }
 
         public override void WriteText(MTextWriter writer)
         {
