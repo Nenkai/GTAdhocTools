@@ -42,6 +42,7 @@ namespace GTAdhocTools.UI
 
         public string GetToken()
         {
+            ReadingArray = false;
             _sb.Clear();
 
             while (!Stream.EndOfStream)

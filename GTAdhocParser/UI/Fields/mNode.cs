@@ -198,7 +198,7 @@ namespace GTAdhocTools.UI
                 else if (token2.StartsWith(MTextIO.ARRAY_START)) // Array def
                 {
                     Name = token;
-                    int arrLen = int.Parse(token2.AsSpan(0, token2.Length - 2));
+                    int arrLen = int.Parse(token2.AsSpan(1, token2.Length - 2));
                     if (arrLen > byte.MaxValue)
                         throw new UISyntaxError($"Array length can only be {byte.MaxValue} elements maximum. Got {arrLen}.");
 
@@ -218,12 +218,18 @@ namespace GTAdhocTools.UI
 
                     if (TypeName == "digit")
                     {
+                        if (WidgetDefinitions.Types.TryGetValue(Name, out string digitType))
+                        {
 
+                        }
+                        throw new NotImplementedException();
                     }
                     else
                     {
                         field = TypeName switch
                         {
+                            "RGBA" => new mColor(),
+                            "color_name" => new mColorName(),
                             "string" => new mString(),
                             "region" => new mRegion(),
                             "vector2" => new mVector(),

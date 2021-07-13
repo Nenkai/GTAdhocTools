@@ -139,7 +139,47 @@ namespace GTAdhocTools.UI.Fields
 
         public override void Read(MTextIO io)
         {
-            throw new NotImplementedException();
+            Elements = new List<mTypeBase>(Length);
+            for (int i = 0; i < Length; i++)
+            {
+                string token = io.GetToken();
+                string token2 = io.GetToken();
+
+                mTypeBase element = null;
+                if (token2 != MTextIO.SCOPE_START.ToString())
+                    throw new UISyntaxError($"Expected array element scope start, got {token2}.");
+
+                // We only have the type
+                if (token == "digit")
+                {
+                    throw new NotImplementedException();
+                }
+                else
+                {
+                    element = token switch
+                    {
+                        "RGBA" => new mColor(),
+                        "color_name" => new mColorName(),
+                        "string" => new mString(),
+                        "region" => new mRegion(),
+                        "vector2" => new mVector(),
+                        "vector3" => new mVector3(),
+                        "rectangle" => new mRectangle(),
+                        _ => new mNode(),
+                    };
+
+                    if (element is mNode)
+                    {
+                        ((mNode)element).TypeName = token;
+                    }
+                }
+                
+                element.Read(io);
+
+                string endToken = io.GetToken();
+                if (io.GetToken() != MTextIO.SCOPE_START.ToString())
+                    throw new UISyntaxError($"Expected array element scope end, got {endToken}.");
+            }
         }
 
         public override void WriteText(MTextWriter writer)
