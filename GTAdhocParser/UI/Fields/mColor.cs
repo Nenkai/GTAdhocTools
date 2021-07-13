@@ -37,7 +37,33 @@ namespace GTAdhocTools.UI.Fields
 
         public override void Read(MTextIO io)
         {
-            throw new NotImplementedException();
+            var r = io.GetNumberToken();
+            if (byte.TryParse(r, out byte rVal))
+                R = rVal;
+            else
+                throw new UISyntaxError($"Unexpected token for mColor R. Got {r}.");
+
+            var g = io.GetNumberToken();
+            if (byte.TryParse(g, out byte gVal))
+                G = gVal;
+            else
+                throw new UISyntaxError($"Unexpected token for mColor G. Got {g}.");
+
+            var b = io.GetNumberToken();
+            if (byte.TryParse(b, out byte bVal))
+                B = bVal;
+            else
+                throw new UISyntaxError($"Unexpected token for mColor B. Got {b}.");
+
+            var a = io.GetNumberToken();
+            if (byte.TryParse(a, out byte aVal))
+                A = aVal;
+            else
+                throw new UISyntaxError($"Unexpected token for mColor A. Got {a}.");
+
+            string end = io.GetToken();
+            if (end != MTextIO.SCOPE_END.ToString())
+                throw new UISyntaxError($"Expected mColor scope end ({MTextIO.SCOPE_END}), got {end}");
         }
 
         public override void WriteText(MTextWriter writer)

@@ -24,7 +24,11 @@ namespace GTAdhocTools.UI.Fields
 
         public override void Read(MTextIO io)
         {
-            throw new NotImplementedException();
+            ColorName = io.GetString();
+
+            string end = io.GetToken();
+            if (end != MTextIO.SCOPE_END.ToString())
+                throw new UISyntaxError($"Expected color name scope end ({MTextIO.SCOPE_END}), got {end}");
         }
 
         public override void WriteText(MTextWriter writer)

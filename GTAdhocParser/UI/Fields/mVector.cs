@@ -34,7 +34,22 @@ namespace GTAdhocTools.UI.Fields
 
         public override void Read(MTextIO io)
         {
-            throw new NotImplementedException();
+            var x = io.GetNumberToken();
+            if (float.TryParse(x, out float xVal))
+                X = xVal;
+            else
+                throw new UISyntaxError($"Unexpected token for mVector X. Got {x}.");
+
+            var y = io.GetNumberToken();
+            if (float.TryParse(y, out float yVal))
+                Y = yVal;
+            else
+                throw new UISyntaxError($"Unexpected token for mVector Y. Got {x}.");
+
+
+            string end = io.GetToken();
+            if (end != MTextIO.SCOPE_END.ToString())
+                throw new UISyntaxError($"Expected mVector scope end ({MTextIO.SCOPE_END}), got {end}");
         }
 
         public override void WriteText(MTextWriter writer)

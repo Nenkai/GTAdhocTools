@@ -152,7 +152,41 @@ namespace GTAdhocTools.UI.Fields
                 // We only have the type
                 if (token == "digit")
                 {
-                    throw new NotImplementedException();
+                    if (WidgetDefinitions.Types.TryGetValue(Name, out UIDefType digitType) && digitType != UIDefType.Unknown)
+                    {
+                        element = digitType switch
+                        {
+                            UIDefType.Int => new mInt(),
+                            UIDefType.UInt => new mUInt(),
+                            UIDefType.Long => new mLong(),
+                            UIDefType.ULong => new mULong(),
+                            UIDefType.Short => new mShort(),
+                            UIDefType.UShort => new mUShort(),
+                            UIDefType.Byte => new mUByte(),
+                            UIDefType.SByte => new mSByte(),
+                            UIDefType.Float => new mFloat(),
+                            UIDefType.Double => new mDouble(),
+                            UIDefType.Bool => new mBool(),
+                            _ => new mInt(),
+                        };
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Missing digit type for '{Name}', assuming Int");
+                        element = new mInt();
+                    }
+                }
+                else if (token.StartsWith(MTextIO.ARRAY_START)) // Array def
+                {
+                    int arrLen = int.Parse(token.AsSpan(1, token.Length - 2));
+                    if (arrLen > byte.MaxValue)
+                        throw new UISyntaxError($"Array length can only be {byte.MaxValue} elements maximum. Got {arrLen}.");
+
+                    element = new mArray();
+                    ((mArray)element).Length = (byte)arrLen;
+
+                    if (token2 != MTextIO.SCOPE_START.ToString())
+                        throw new Exception($"Expected '{MTextIO.SCOPE_START}' character for node array field definition.");
                 }
                 else
                 {
@@ -162,7 +196,7 @@ namespace GTAdhocTools.UI.Fields
                         "color_name" => new mColorName(),
                         "string" => new mString(),
                         "region" => new mRegion(),
-                        "vector2" => new mVector(),
+                        "vector" => new mVector(),
                         "vector3" => new mVector3(),
                         "rectangle" => new mRectangle(),
                         _ => new mNode(),
@@ -175,11 +209,12 @@ namespace GTAdhocTools.UI.Fields
                 }
                 
                 element.Read(io);
-
-                string endToken = io.GetToken();
-                if (io.GetToken() != MTextIO.SCOPE_START.ToString())
-                    throw new UISyntaxError($"Expected array element scope end, got {endToken}.");
+                Elements.Add(element);
             }
+
+            string endToken = io.GetToken();
+            if (endToken != MTextIO.SCOPE_END.ToString())
+                throw new UISyntaxError($"Expected array scope end, got {endToken}.");
         }
 
         public override void WriteText(MTextWriter writer)

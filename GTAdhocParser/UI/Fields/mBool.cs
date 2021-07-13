@@ -23,7 +23,17 @@ namespace GTAdhocTools.UI.Fields
 
         public override void Read(MTextIO io)
         {
-            throw new NotImplementedException();
+            var numbToken = io.GetNumberToken();
+            if (numbToken == "1")
+                Value = true;
+            else if (numbToken == "0")
+                Value = false;
+            else
+                throw new UISyntaxError($"Expected bool token (1/0) for mBool. Got {numbToken}.");
+
+            string end = io.GetToken();
+            if (end != MTextIO.SCOPE_END.ToString())
+                throw new UISyntaxError($"Expected mBool scope end ({MTextIO.SCOPE_END}), got {end}");
         }
 
         public override void WriteText(MTextWriter writer)

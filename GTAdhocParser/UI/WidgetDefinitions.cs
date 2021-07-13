@@ -10,7 +10,7 @@ namespace GTAdhocTools.UI
     public class WidgetDefinitions
     {
 
-        public static Dictionary<string, string> Types = new();
+        public static Dictionary<string, UIDefType> Types = new();
 
         static WidgetDefinitions()
         {
@@ -29,11 +29,28 @@ namespace GTAdhocTools.UI
                 if (spl.Length <= 1)
                     continue;
 
-                if (spl[0] == "add_field")
+                if (spl[0] == "add_field" && spl.Length == 3)
                 {
-                    Types.Add(spl[1], spl[2]);
+                    if (Enum.TryParse(spl[2], out UIDefType res))
+                        Types.Add(spl[1], res);
                 }
             }
         }
+    }
+
+    public enum UIDefType
+    {
+        Unknown,
+        Float,
+        UInt,
+        Int,
+        Long,
+        ULong,
+        Double,
+        Byte,
+        SByte,
+        Short,
+        UShort,
+        Bool,
     }
 }

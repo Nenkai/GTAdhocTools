@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using System.Globalization;
 
 namespace GTAdhocTools.UI.Fields
 {
@@ -40,7 +41,33 @@ namespace GTAdhocTools.UI.Fields
 
         public override void Read(MTextIO io)
         {
-            throw new NotImplementedException();
+            var x = io.GetNumberToken();
+            if (float.TryParse(x, out float xVal))
+                X = xVal;
+            else
+                throw new UISyntaxError($"Unexpected token for mRectangle X. Got {x}.");
+
+            var y = io.GetNumberToken();
+            if (float.TryParse(y, out float yVal))
+                Y = yVal;
+            else
+                throw new UISyntaxError($"Unexpected token for mRectangle Y. Got {x}.");
+
+            var w = io.GetNumberToken();
+            if (float.TryParse(w, out float wVal))
+                Width = wVal;
+            else
+                throw new UISyntaxError($"Unexpected token for mRectangle Width. Got {w}.");
+
+            var h = io.GetNumberToken();
+            if (float.TryParse(h, out float hVal))
+                Height = hVal;
+            else
+                throw new UISyntaxError($"Unexpected token for mRectangle Height. Got {h}.");
+
+            string end = io.GetToken();
+            if (end != MTextIO.SCOPE_END.ToString())
+                throw new UISyntaxError($"Expected mRectangle scope end ({MTextIO.SCOPE_END}), got {end}");
         }
 
         public override void WriteText(MTextWriter writer)

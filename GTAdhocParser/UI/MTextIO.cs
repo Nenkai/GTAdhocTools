@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using System.Globalization;
 
 namespace GTAdhocTools.UI
 {
@@ -21,6 +22,13 @@ namespace GTAdhocTools.UI
         public const char SCOPE_END = '}';
         public const char STRING_SCOPE = '"';
 
+        public const char NUMBER_PERIOD = '.';
+        public const char NUMBER_COMMA = ',';
+        public const char NUMBER_MINUS = '-';
+
+        public const char TOKEN_ESCAPER = '\'';
+        public const char FIELD_SEPARATOR = ':';
+
         private StringBuilder _sb = new StringBuilder();
 
         public MTextIO(string fileName)
@@ -30,6 +38,12 @@ namespace GTAdhocTools.UI
 
         public mNode Read()
         {
+            // To parse float's .
+            CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
+            CultureInfo.CurrentUICulture = CultureInfo.InvariantCulture;
+            CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
+            CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
+
             using var file = File.Open(FileName, FileMode.Open);
             Stream = new StreamReader(file);
 
@@ -45,6 +59,7 @@ namespace GTAdhocTools.UI
             ReadingArray = false;
             _sb.Clear();
 
+            bool escapeToken = false;
             while (!Stream.EndOfStream)
             {
                 var nextChar = Stream.Peek();
@@ -52,7 +67,7 @@ namespace GTAdhocTools.UI
                     return null;
 
                 var c = (char)nextChar;
-                if (_sb.Length != 0) // Check for potential termination
+                if (_sb.Length != 0) // Check for potential termination, first
                 {
                     if (IsDiscardableChar(c))
                     {
@@ -60,6 +75,14 @@ namespace GTAdhocTools.UI
                     }
                     else if (c == SCOPE_START || c == ARRAY_START)
                     {
+                        return _sb.ToString();
+                    }
+                    else if (c == TOKEN_ESCAPER)
+                    {
+                        if (!escapeToken) // Only start
+                            throw new UISyntaxError($"Unexpected token escape identifier end, start not specified");
+
+                        Advance();
                         return _sb.ToString();
                     }
                     else if (c == ARRAY_END)
@@ -91,6 +114,21 @@ namespace GTAdhocTools.UI
                     {
                         _sb.Append((char)Stream.Read());
                     }
+                    else if (c == TOKEN_ESCAPER)
+                    {
+                        if (_sb.Length != 0) // Only start
+                            throw new UISyntaxError($"Unexpected token escape identifier, token is already started.");
+
+                        escapeToken = true;
+                        Advance();
+                    }
+                    else if (c == FIELD_SEPARATOR) 
+                    {
+                        if (!escapeToken)
+                            throw new UISyntaxError($"Unexpected token separator, token is not escaped.");
+
+                        _sb.Append((char)Stream.Read());
+                    }
                     else if (c == ARRAY_START)
                     {
                         ReadingArray = true;
@@ -102,6 +140,78 @@ namespace GTAdhocTools.UI
                         return c.ToString();
                     }
                 }
+            }
+
+            return _sb.ToString();
+        }
+
+        public string GetNumberToken()
+        {
+            bool negated = false;
+            bool comma = false;
+            bool lastComma = false;
+            _sb.Clear();
+
+            while (!Stream.EndOfStream)
+            {
+                var nextChar = Stream.Peek();
+                if (nextChar == -1)
+                    return null;
+
+                var c = (char)nextChar;
+                if (_sb.Length != 0) // Check for potential termination
+                {
+                    if ((c != NUMBER_PERIOD && c != NUMBER_PERIOD) && (IsDiscardableChar(c) || !IsNumberChar(c)))
+                    {
+                        if (lastComma) // TODO: Check if the game accepts it anyway
+                            throw new UISyntaxError($"Unexpected number token ended by number comma.");
+
+                        return _sb.ToString();
+                    }
+                }
+                else
+                {
+                    if (IsDiscardableChar(c))
+                    {
+                        Advance();
+                        continue;
+                    }
+                }
+
+                if (c == NUMBER_MINUS)
+                {
+                    // Commented due to '1.16115E-13'
+                    // if (negated) 
+                    //   throw new UISyntaxError($"Unexpected '-' for number token, was already present.");
+
+                    negated = true;
+                    _sb.Append((char)Stream.Read());
+                }
+                else if (c == NUMBER_PERIOD || c == NUMBER_PERIOD) // Ensure to parse commas as periods, to be nice
+                {
+                    if (_sb.Length == 0)
+                        throw new UISyntaxError($"Unexpected '.' for number token, at the beginning of token");
+
+                    if (comma == true)
+                        throw new UISyntaxError($"Unexpected '.' for number token, number already has a comma");
+
+                    Advance();
+                    _sb.Append('.');
+
+                    comma = true;
+                    lastComma = true;
+                    continue;
+                }
+                else if (char.IsDigit(c) || c == 'E') // 1.16115E-13
+                {
+                    _sb.Append((char)Stream.Read());
+                }
+                else
+                {
+                    throw new UISyntaxError($"Unexpected number token syntax error, got {c}.");
+                }
+
+                lastComma = false;
             }
 
             return _sb.ToString();
@@ -155,6 +265,9 @@ namespace GTAdhocTools.UI
 
         private bool IsDiscardableChar(char c)
             => c == ' ' || c == '\n' || c == '\t' || c == '\r';
+
+        private bool IsNumberChar(char c)
+            => char.IsDigit(c) || c == '-' || c == 'E';
 
         private void Advance()
             => Stream.Read();

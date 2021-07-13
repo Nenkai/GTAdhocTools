@@ -197,7 +197,6 @@ namespace GTAdhocTools.UI
                 }
                 else if (token2.StartsWith(MTextIO.ARRAY_START)) // Array def
                 {
-                    Name = token;
                     int arrLen = int.Parse(token2.AsSpan(1, token2.Length - 2));
                     if (arrLen > byte.MaxValue)
                         throw new UISyntaxError($"Array length can only be {byte.MaxValue} elements maximum. Got {arrLen}.");
@@ -207,32 +206,52 @@ namespace GTAdhocTools.UI
 
                     if (io.GetToken() != MTextIO.SCOPE_START.ToString())
                         throw new Exception($"Expected '{MTextIO.SCOPE_START}' character for node array field definition.");
+
+                    field.Name = token;
                 }
                 else
                 {
-                    Name = token;
-                    TypeName = token2;
+                    string fieldName = token;
+                    string fieldType = token2;
                     string token3 = io.GetToken();
                     if (token3 != MTextIO.SCOPE_START.ToString())
                         throw new Exception($"Expected '{MTextIO.SCOPE_START}' character for node field definition.");
 
-                    if (TypeName == "digit")
+                    if (fieldType == "digit")
                     {
-                        if (WidgetDefinitions.Types.TryGetValue(Name, out string digitType))
+                        if (WidgetDefinitions.Types.TryGetValue(fieldName, out UIDefType digitType) && digitType != UIDefType.Unknown)
                         {
-
+                            field = digitType switch
+                            {
+                                UIDefType.Int => new mInt(),
+                                UIDefType.UInt => new mUInt(),
+                                UIDefType.Long => new mLong(),
+                                UIDefType.ULong => new mULong(),
+                                UIDefType.Short => new mShort(),
+                                UIDefType.UShort => new mUShort(),
+                                UIDefType.Byte => new mUByte(),
+                                UIDefType.SByte => new mSByte(),
+                                UIDefType.Float => new mFloat(),
+                                UIDefType.Double => new mDouble(),
+                                UIDefType.Bool => new mBool(),
+                                _ => new mInt(),
+                            };
                         }
-                        throw new NotImplementedException();
+                        else
+                        {
+                            Console.WriteLine($"Missing digit type for '{fieldName}', assuming Int");
+                            field = new mInt();
+                        }
                     }
                     else
                     {
-                        field = TypeName switch
+                        field = fieldType switch
                         {
                             "RGBA" => new mColor(),
                             "color_name" => new mColorName(),
                             "string" => new mString(),
                             "region" => new mRegion(),
-                            "vector2" => new mVector(),
+                            "vector" => new mVector(),
                             "vector3" => new mVector3(),
                             "rectangle" => new mRectangle(),
                             _ => new mNode(),
@@ -249,6 +268,7 @@ namespace GTAdhocTools.UI
                 }
 
                 field.Read(io);
+                Child.Add(field);
             }
         }
 

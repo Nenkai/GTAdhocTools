@@ -23,7 +23,15 @@ namespace GTAdhocTools.UI.Fields
 
         public override void Read(MTextIO io)
         {
-            throw new NotImplementedException();
+            var numbToken = io.GetNumberToken();
+            if (byte.TryParse(numbToken, out byte val))
+                Value = val;
+            else
+                throw new UISyntaxError($"Unexpected token for mByte. Got {numbToken}.");
+
+            string end = io.GetToken();
+            if (end != MTextIO.SCOPE_END.ToString())
+                throw new UISyntaxError($"Expected mByte scope end ({MTextIO.SCOPE_END}), got {end}");
         }
 
         public override void WriteText(MTextWriter writer)
