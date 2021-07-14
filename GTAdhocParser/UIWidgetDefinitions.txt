@@ -46,10 +46,10 @@ add_field|pack_pad_left|Int
 add_field|pack_pad_right|Int
 add_field|pack_pad_top|Int
 add_field|pack_pad_bottom|Int
-add_field|pack_allocate_x|Int
-add_field|pack_allocate_y|Int
-add_field|pack_allocate_h|Int
-add_field|pack_allocate_w|Int
+add_field|pack_allocate_x|Bool
+add_field|pack_allocate_y|Bool
+add_field|pack_allocate_h|Bool
+add_field|pack_allocate_w|Bool
 add_field|pack_end|Unknown
 add_field|pack_type_x|Unknown
 add_field|pack_type_y|Unknown
@@ -112,7 +112,7 @@ add_field|error_cvalor|Unknown
 add_field|input_mode|Unknown
 add_field|input_mode_name|String
 add_field|max_input_length|Int
-add_field|enable_return|Unknown
+add_field|enable_return|Bool
 
 current_type|Composite
 inherits|Widget
@@ -187,7 +187,7 @@ add_field|popup_margin_top|Float
 add_field|popup_margin_bottom|Float
 
 add_field|context_number|Unknown
-add_field|curxsor_type|Unknown
+add_field|cursor_type|Unknown
 add_field|navigate_clip_angle|Unknown
 add_field|navigate_sound|Unknown
 add_field|display_priority|Int
@@ -202,8 +202,8 @@ add_field|navigate_wraparound_x|Int
 add_field|navigate_wraparound_y|Int
 add_field|navigate_slant_move|Unknown
 add_field|navigate_insensitive|Bool
-add_field|navigate_recovery_x|Int
-add_field|navigate_recovery_y|Int
+add_field|navigate_recovery_x|Bool
+add_field|navigate_recovery_y|Bool
 add_field|free_cursor_mode|Bool
 add_field|react_event|Unknown
 add_field|manual_close|Unknown
@@ -253,6 +253,26 @@ add_field|br_image_path|String
 add_field|frame_width|Float
 add_field|frame_height|Float
 add_field|image_path|String
+
+current_type|GraphFace
+inherits|ColorFace
+add_field|graph_type|Unknown
+add_field|graph_type_name|String
+add_field|index_type_name|String
+add_field|line_width|Unknown
+add_field|image_path|String
+add_field|line_image_path|String
+add_field|head_image_path|String
+add_field|tail_image_path|String
+add_field|head_length|Unknown
+add_field|head_ratio|Unknown
+add_field|tail_length|Unknown
+add_field|tail_ratio|Unknown
+add_field|action_enabled|Unknown
+add_field|trun_back|Unknown
+//add_field|repeat|Bool
+add_field|repeat_wait|Int
+//add_field|velocity|
 
 current_type|ImageFace
 inherits|Widget
@@ -404,6 +424,12 @@ add_field|right|Float
 add_field|top|Float
 add_field|bottom|Float
 add_field|actor_list|Unknown
+
+current_type|EffectWipe
+inherits|Effect
+add_field|blind_width|Float
+add_field|blind_rotate|Float
+// TODO More
 
 current_type|Scrollbar
 inherits|Box

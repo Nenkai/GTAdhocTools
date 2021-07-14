@@ -12,6 +12,9 @@ namespace GTAdhocTools.UI
 
         public static Dictionary<string, UIDefType> Types = new();
 
+        public record UIFieldTypeOverride(string Type, string FieldName, UIDefType ValueType);
+        public static List<UIFieldTypeOverride> TypeOverrides = new();
+
         static WidgetDefinitions()
         {
             Read();
@@ -33,6 +36,23 @@ namespace GTAdhocTools.UI
                 {
                     if (Enum.TryParse(spl[2], out UIDefType res))
                         Types.Add(spl[1], res);
+                }
+            }
+
+            txt = File.ReadAllLines("UIWidgetDefinitionsTypeOverride.txt");
+            foreach (var line in txt)
+            {
+                if (string.IsNullOrEmpty(line) || line.StartsWith("//"))
+                    continue;
+
+                var spl = line.Split('|');
+                if (spl.Length <= 1)
+                    continue;
+
+                if (spl[0] == "add_override" && spl.Length == 4)
+                {
+                    if (Enum.TryParse(spl[3], out UIDefType res))
+                        TypeOverrides.Add(new UIFieldTypeOverride(spl[1], spl[2], res));
                 }
             }
         }

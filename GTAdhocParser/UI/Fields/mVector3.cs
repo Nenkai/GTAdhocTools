@@ -61,6 +61,26 @@ namespace GTAdhocTools.UI.Fields
                 throw new UISyntaxError($"Expected mVector3 scope end ({MTextIO.SCOPE_END}), got {end}");
         }
 
+        public override void Write(MBinaryWriter writer)
+        {
+            if (writer.Version == 0)
+                throw new NotImplementedException();
+            else
+            {
+                writer.Stream.WriteVarInt((int)FieldType.String);
+                writer.Stream.WriteVarString("vector3");
+
+                writer.Stream.WriteVarInt((int)FieldType.Float);
+                writer.Stream.WriteSingle(X);
+
+                writer.Stream.WriteVarInt((int)FieldType.Float);
+                writer.Stream.WriteSingle(Y);
+
+                writer.Stream.WriteVarInt((int)FieldType.Float);
+                writer.Stream.WriteSingle(Z);
+            }
+        }
+
         public override void WriteText(MTextWriter writer)
         {
             writer.WriteString(Name);

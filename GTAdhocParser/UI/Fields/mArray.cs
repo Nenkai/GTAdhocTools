@@ -217,6 +217,24 @@ namespace GTAdhocTools.UI.Fields
                 throw new UISyntaxError($"Expected array scope end, got {endToken}.");
         }
 
+        public override void Write(MBinaryWriter writer)
+        {
+            if (writer.Version == 0)
+            {
+                throw new NotImplementedException();
+            }
+            else
+            {
+                writer.Stream.WriteVarInt((int)FieldType.ArrayMaybe);
+                writer.Stream.WriteVarInt(Elements.Count);
+
+                foreach (var element in Elements)
+                {
+                    element.Write(writer);
+                }
+            }
+        }
+
         public override void WriteText(MTextWriter writer)
         {
             writer.WriteString(Name);

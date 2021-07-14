@@ -23,6 +23,56 @@ namespace GTAdhocTools
             return sr.ReadBytes((int)strLen);
         }
 
+        public static void WriteVarInt(this BinaryStream bs, int val)
+        {
+            Span<byte> buffer = Array.Empty<byte>();
+
+            if (val <= 0x7F)
+            {
+                bs.WriteByte((byte)val);
+                return;
+            }
+            else if (val <= 0x3FFF)
+            {
+                Span<byte> tempBuf = BitConverter.GetBytes(val).AsSpan();
+                tempBuf.Reverse();
+                buffer = tempBuf.Slice(2, 2);
+            }
+            else if (val <= 0x1FFFFF)
+            {
+                Span<byte> tempBuf = BitConverter.GetBytes(val).AsSpan();
+                tempBuf.Reverse();
+                buffer = tempBuf.Slice(1, 3);
+            }
+            else if (val <= 0xFFFFFFF)
+            {
+                buffer = BitConverter.GetBytes(val).AsSpan();
+                buffer.Reverse();
+            }
+            else if (val <= 0xFFFFFFFF)
+            {
+                buffer = BitConverter.GetBytes(val);
+                buffer.Reverse();
+                buffer = new byte[] { 0, buffer[0], buffer[1], buffer[2], buffer[3] };
+            }
+
+            uint mask = 0x80;
+            for (int i = 1; i < buffer.Length; i++)
+            {
+                buffer[0] += (byte)mask;
+                mask >>= 1;
+            }
+
+            bs.Write(buffer);
+        }
+
+        public static void WriteVarString(this BinaryStream bs, string str)
+        {
+            var bytes = Encoding.UTF8.GetBytes(str);
+            WriteVarInt(bs, bytes.Length);
+            bs.Write(bytes);
+        }
+
         public static ulong DecodeBitsAndAdvance(this BinaryStream sr)
         {
             ulong value = (ulong)sr.ReadByte();

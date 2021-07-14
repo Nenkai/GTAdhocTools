@@ -34,6 +34,12 @@ namespace GTAdhocTools.UI.Fields
                 throw new UISyntaxError($"Expected mSByte scope end ({MTextIO.SCOPE_END}), got {end}");
         }
 
+        public override void Write(MBinaryWriter writer)
+        {
+            writer.Stream.WriteVarInt((int)FieldType.SByte);
+            writer.Stream.WriteSByte(Value);
+        }
+
         public override void WriteText(MTextWriter writer)
         {
             writer.WriteString(Name);

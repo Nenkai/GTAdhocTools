@@ -20,6 +20,8 @@ namespace GTAdhocTools.UI.Fields
 
         public abstract void Read(MTextIO io);
 
+        public abstract void Write(MBinaryWriter writer);
+
         public abstract void WriteText(MTextWriter writer);
 
     }

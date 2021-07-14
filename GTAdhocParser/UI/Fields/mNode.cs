@@ -219,7 +219,17 @@ namespace GTAdhocTools.UI
 
                     if (fieldType == "digit")
                     {
-                        if (WidgetDefinitions.Types.TryGetValue(fieldName, out UIDefType digitType) && digitType != UIDefType.Unknown)
+                        // Search potentially colliding field names with different types
+                        UIDefType digitType;
+                        var potentialOverride = WidgetDefinitions.TypeOverrides.FirstOrDefault(e => e.Type == fieldName && e.FieldName == fieldName);
+                        if (potentialOverride != null)
+                            digitType = potentialOverride.ValueType;
+                        else 
+                            WidgetDefinitions.Types.TryGetValue(fieldName, out digitType); // No collision, just try to find it by name
+
+                        /* No real easier way, the component types i.e 'DialogParts::DialogFrame::Pane::Head::Close::Cross' do not expose their actual type */
+
+                        if (digitType != UIDefType.Unknown)
                         {
                             field = digitType switch
                             {
@@ -269,6 +279,26 @@ namespace GTAdhocTools.UI
 
                 field.Read(io);
                 Child.Add(field);
+            }
+        }
+
+        public override void Write(MBinaryWriter writer)
+        {
+            if (writer.Version == 0)
+                throw new NotImplementedException();
+            else
+            {
+                writer.Stream.WriteVarInt((int)FieldType.ScopeStart);
+                writer.Stream.WriteVarString(TypeName);
+
+                foreach (var field in Child)
+                {
+                    writer.Stream.WriteVarInt((int)FieldType.String);
+                    writer.Stream.WriteVarString(field.Name);
+                    field.Write(writer);
+                }
+
+                writer.Stream.WriteVarInt((int)FieldType.ScopeEnd);
             }
         }
 

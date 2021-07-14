@@ -34,6 +34,8 @@ namespace GTAdhocTools
 
                     if (adc.Version == 12)
                         adc.PrintStrings(Path.ChangeExtension(args[0], ".strings"));
+
+                    return;
                 }
                 else if (args[0].ToLower().EndsWith(".gpb"))
                 {
@@ -48,15 +50,15 @@ namespace GTAdhocTools
                     string dir = Path.GetDirectoryName(args[0]);
 
                     gpb.Unpack(Path.GetFileNameWithoutExtension(args[0]), null);
+                    return;
                 }
             }
-            else
-            {
-                Parser.Default.ParseArguments<PackVerbs, UnpackVerbs, UIVerbs>(args)
-                    .WithParsed<PackVerbs>(Pack)
-                    .WithParsed<UnpackVerbs>(Unpack)
-                    .WithParsed<UIVerbs>(UI);
-            }
+
+            Parser.Default.ParseArguments<PackVerbs, UnpackVerbs, MProjectToBinVerbs, MProjectToTextVerbs>(args)
+                .WithParsed<PackVerbs>(Pack)
+                .WithParsed<UnpackVerbs>(Unpack)
+                .WithParsed<MProjectToBinVerbs>(MProjectToBin)
+                .WithParsed<MProjectToTextVerbs>(MProjectToText);
         }
 
         public static void Pack(PackVerbs packVerbs)
@@ -102,14 +104,25 @@ namespace GTAdhocTools
             }
         }
 
-        public static void UI(UIVerbs uiVerbs)
+        public static void MProjectToBin(MProjectToBinVerbs verbs)
         {
-            var mbin = new MBinaryIO(uiVerbs.InputPath);
+            if (verbs.Version == 0)
+            {
+                Console.WriteLine("Version 0 is not currently supported.");
+                return;
+            }
+            else if (verbs.Version > 1 || verbs.Version < 0)
+            {
+                Console.WriteLine("Version must be 0 or 1. (0 not current supported).");
+                return;
+            }
+
+            var mbin = new MBinaryIO(verbs.InputPath);
             mNode rootNode = mbin.Read();
 
             if (rootNode is null)
             {
-                var mtext = new MTextIO(uiVerbs.InputPath);
+                var mtext = new MTextIO(verbs.InputPath);
                 rootNode = mtext.Read();
                 
                 if (rootNode is null)
@@ -119,9 +132,35 @@ namespace GTAdhocTools
                 }
             }
 
-            using MTextWriter writer = new MTextWriter(uiVerbs.OutputPath);
-            writer.Debug = uiVerbs.Debug;
+            MBinaryWriter writer = new MBinaryWriter(verbs.OutputPath);
+            writer.Version = verbs.Version;
             writer.WriteNode(rootNode);
+
+            Console.WriteLine($"Done. Exported to '{verbs.OutputPath}'.");
+        }
+
+        public static void MProjectToText(MProjectToTextVerbs verbs)
+        {
+            var mbin = new MBinaryIO(verbs.InputPath);
+            mNode rootNode = mbin.Read();
+
+            if (rootNode is null)
+            {
+                var mtext = new MTextIO(verbs.InputPath);
+                rootNode = mtext.Read();
+
+                if (rootNode is null)
+                {
+                    Console.WriteLine("Could not read mproject.");
+                    return;
+                }
+            }
+
+            using MTextWriter writer = new MTextWriter(verbs.OutputPath);
+            writer.Debug = verbs.Debug;
+            writer.WriteNode(rootNode);
+
+            Console.WriteLine($"Done. Exported to '{verbs.OutputPath}'.");
         }
     }
 
@@ -133,7 +172,6 @@ namespace GTAdhocTools
 
         [Option('o', "output", HelpText = "Output folder for unpacked files.")]
         public string OutputPath { get; set; }
-
     }
 
     [Verb("pack", HelpText = "Pack files like gpb's, or mpackage's.")]
@@ -150,8 +188,21 @@ namespace GTAdhocTools
 
     }
 
-    [Verb("ui", HelpText = "Read mwidget/mproject and outputs it to a text file.")]
-    public class UIVerbs
+    [Verb("mproject-to-bin", HelpText = "Read mwidget/mproject and outputs it to a binary version of it.")]
+    public class MProjectToBinVerbs
+    {
+        [Option('i', "input", Required = true, HelpText = "Input folder.")]
+        public string InputPath { get; set; }
+
+        [Option('o', "output", Required = true, HelpText = "Output folder.")]
+        public string OutputPath { get; set; }
+
+        [Option('v', "version", Default = 1, HelpText = "Version of the binary file. Default is 1. (0 is currently unsupported, used for GT5 and under. 1 is GT6 and above.")]
+        public int Version { get; set; }
+    }
+
+    [Verb("mproject-to-text", HelpText = "Read mwidget/mproject and outputs it to a text version of it.")]
+    public class MProjectToTextVerbs
     {
         [Option('i', "input", Required = true, HelpText = "Input folder.")]
         public string InputPath { get; set; }

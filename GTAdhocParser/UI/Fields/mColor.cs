@@ -66,6 +66,31 @@ namespace GTAdhocTools.UI.Fields
                 throw new UISyntaxError($"Expected mColor scope end ({MTextIO.SCOPE_END}), got {end}");
         }
 
+        public override void Write(MBinaryWriter writer)
+        {
+            if (writer.Version == 0)
+            {
+                throw new NotImplementedException();
+            }
+            else 
+            {
+                writer.Stream.WriteVarInt((int)FieldType.String);
+                writer.Stream.WriteVarString("RGBA");
+
+                writer.Stream.WriteVarInt((int)FieldType.UByte);
+                writer.Stream.WriteByte(R);
+
+                writer.Stream.WriteVarInt((int)FieldType.UByte);
+                writer.Stream.WriteByte(G);
+
+                writer.Stream.WriteVarInt((int)FieldType.UByte);
+                writer.Stream.WriteByte(B);
+
+                writer.Stream.WriteVarInt((int)FieldType.UByte);
+                writer.Stream.WriteByte(A);
+            }
+        }
+
         public override void WriteText(MTextWriter writer)
         {
             if (Name != null)

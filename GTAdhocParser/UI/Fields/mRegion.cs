@@ -69,6 +69,31 @@ namespace GTAdhocTools.UI.Fields
                 throw new UISyntaxError($"Expected mRectangle scope end ({MTextIO.SCOPE_END}), got {end}");
         }
 
+        public override void Write(MBinaryWriter writer)
+        {
+            if (writer.Version == 0)
+            {
+                throw new NotImplementedException();
+            }
+            else
+            {
+                writer.Stream.WriteVarInt((int)FieldType.String);
+                writer.Stream.WriteVarString("region");
+
+                writer.Stream.WriteVarInt((int)FieldType.Float);
+                writer.Stream.WriteSingle(X1);
+
+                writer.Stream.WriteVarInt((int)FieldType.Float);
+                writer.Stream.WriteSingle(Y1);
+
+                writer.Stream.WriteVarInt((int)FieldType.Float);
+                writer.Stream.WriteSingle(X2);
+
+                writer.Stream.WriteVarInt((int)FieldType.Float);
+                writer.Stream.WriteSingle(Y2);
+            }
+        }
+
         public override void WriteText(MTextWriter writer)
         {
             writer.WriteString(Name);

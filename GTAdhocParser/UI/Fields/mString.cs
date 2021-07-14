@@ -30,6 +30,12 @@ namespace GTAdhocTools.UI.Fields
                 throw new UISyntaxError($"Expected string scope end ({MTextIO.SCOPE_END}), got {end}");
         }
 
+        public override void Write(MBinaryWriter writer)
+        {
+            writer.Stream.WriteVarInt((int)FieldType.String);
+            writer.Stream.WriteVarString(String);
+        }
+
         public override void WriteText(MTextWriter writer)
         {
             writer.WriteString(Name);

@@ -27,6 +27,12 @@ namespace GTAdhocTools.UI.Fields
             throw new NotImplementedException();
         }
 
+        public override void Write(MBinaryWriter writer)
+        {
+            writer.Stream.WriteVarInt((int)FieldType.Float);
+            writer.Stream.WriteDouble(Value);
+        }
+
         public override void WriteText(MTextWriter writer)
         {
             writer.WriteString(Name);
