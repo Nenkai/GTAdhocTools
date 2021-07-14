@@ -12,7 +12,7 @@ namespace GTAdhocTools.UI
 
         public static Dictionary<string, UIDefType> Types = new();
 
-        public record UIFieldTypeOverride(string Type, string FieldName, UIDefType ValueType);
+        public record UIFieldTypeOverride(string WidgetName, string FieldName, UIDefType ValueType);
         public static List<UIFieldTypeOverride> TypeOverrides = new();
 
         static WidgetDefinitions()

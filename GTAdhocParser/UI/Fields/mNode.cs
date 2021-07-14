@@ -221,7 +221,7 @@ namespace GTAdhocTools.UI
                     {
                         // Search potentially colliding field names with different types
                         UIDefType digitType;
-                        var potentialOverride = WidgetDefinitions.TypeOverrides.FirstOrDefault(e => e.Type == fieldName && e.FieldName == fieldName);
+                        var potentialOverride = WidgetDefinitions.TypeOverrides.FirstOrDefault(e => e.WidgetName == TypeName && e.FieldName == fieldName);
                         if (potentialOverride != null)
                             digitType = potentialOverride.ValueType;
                         else 
