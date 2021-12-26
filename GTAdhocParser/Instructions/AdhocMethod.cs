@@ -47,7 +47,7 @@ namespace GTAdhocTools.Instructions
             sb.AppendLine(")");
 
             sb.Append("  > Instruction Count: ").Append(Code.InstructionCount).Append(" (").Append(Code.InstructionCountOffset.ToString("X2")).Append(')').AppendLine();
-            sb.Append($"  > StackUnk1: {Code.StackUnk} - StackSize1: {Code.StackSize1} - StackSize2: {(Code.CodeVersion < 10 ? "=StackSize1" : $"{Code.StackSize2}")}");
+            sb.Append($"  > Stack Size: {Code.StackSize} - Variable Heap Size: {Code.VariableHeapSize} - Variable Heap Size Static: {(Code.CodeVersion < 10 ? "=Variable Heap Size" : $"{Code.VariableHeapStaticSize}")}");
 
             return sb.ToString();
         }

@@ -110,7 +110,7 @@ namespace GTAdhocTools
             if (StringTable != null)
                 sw.WriteLine($"({StringTable.Length} strings)");
             sw.WriteLine($"Root Instructions: {ParentCode.Components.Count}");
-            sw.WriteLine($"StackUnk1: {ParentCode.StackUnk} - StackSize1: {ParentCode.StackSize1} - StackSize2: {(Version < 10 ? "=StackSize1" : $"{ParentCode.StackSize2}")}");
+            sb.Append($"  > Stack Size: {Code.StackSize} - Variable Heap Size: {Code.VariableHeapSize} - Variable Heap Size Static: {(Code.CodeVersion < 10 ? "=Variable Heap Size" : $"{Code.VariableHeapStaticSize}")}");
             sw.WriteLine();
             
             var d = new CodeBuilder();

@@ -22,7 +22,9 @@ namespace GTAdhocTools.UI
 
         public static void Read()
         {
-            var txt = File.ReadAllLines("UIWidgetDefinitions.txt");
+            string currentPath = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
+            string currentDir = Path.GetDirectoryName(currentPath);
+            var txt = File.ReadAllLines(Path.Combine(currentDir, "UIWidgetDefinitions.txt"));
             foreach (var line in txt)
             {
                 if (string.IsNullOrEmpty(line) || line.StartsWith("//"))
@@ -39,7 +41,7 @@ namespace GTAdhocTools.UI
                 }
             }
 
-            txt = File.ReadAllLines("UIWidgetDefinitionsTypeOverride.txt");
+            txt = File.ReadAllLines(Path.Combine(currentDir, "UIWidgetDefinitionsTypeOverride.txt"));
             foreach (var line in txt)
             {
                 if (string.IsNullOrEmpty(line) || line.StartsWith("//"))

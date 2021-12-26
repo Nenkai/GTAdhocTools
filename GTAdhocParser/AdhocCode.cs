@@ -37,9 +37,9 @@ namespace GTAdhocTools
         public string OriginalSourceFile { get; set; }
         public byte CodeVersion { get; set; }
 
-        public int StackUnk;
-        public int StackSize1;
-        public int StackSize2;
+        public int StackSize;
+        public int VariableHeapSize;
+        public int VariableHeapStaticSize;
 
         public uint InstructionCount { get; set; }
         public uint InstructionCountOffset { get; set; }
@@ -96,21 +96,21 @@ namespace GTAdhocTools
                     }
                 }
 
-                uint unkCount3 = sr.ReadUInt32();
+                uint unkVarHeapIndex = sr.ReadUInt32();
             }
 
             if (parent.Version <= 10)
             {
-                StackSize1 = sr.ReadInt32();
-                StackUnk = sr.ReadInt32();
-                StackSize2 = StackSize1;
+                VariableHeapSize = sr.ReadInt32();
+                StackSize = sr.ReadInt32();
+                VariableHeapStaticSize = VariableHeapSize;
             }
             else
             {
 
-                StackUnk = sr.ReadInt32();
-                StackSize1 = sr.ReadInt32();
-                StackSize2 = sr.ReadInt32();
+                StackSize = sr.ReadInt32();
+                VariableHeapSize = sr.ReadInt32();
+                VariableHeapStaticSize = sr.ReadInt32();
             }
 
             InstructionCountOffset = (uint)sr.Position;
