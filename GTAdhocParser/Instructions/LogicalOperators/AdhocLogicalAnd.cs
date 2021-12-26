@@ -10,7 +10,7 @@ namespace GTAdhocTools.Instructions
 {
     public class OpLogicalAnd : InstructionBase
     {
-        public AdhocCallType CallType { get; set; } = AdhocCallType.LOGICAL_OR;
+        public AdhocCallType CallType { get; set; } = AdhocCallType.LOGICAL_AND;
         
 
         public uint Value;
