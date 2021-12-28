@@ -10,16 +10,16 @@ namespace GTAdhocTools.Instructions
 {
     public class OpAttributeDefine : InstructionBase
     {
-        public AdhocCallType CallType { get; set; } = AdhocCallType.ATTRIBUTE_PUSH;
-        public string AttributeName { get; set; }
+        public AdhocCallType CallType { get; set; } = AdhocCallType.ATTRIBUTE_DEFINE;
+        public string Name { get; set; }
 
         public override void Deserialize(AdhocFile parent, ref SpanReader sr)
         {
-            AttributeName = Utils.ReadADCString(parent, ref sr);
+            Name = Utils.ReadADCString(parent, ref sr);
         }
 
         public override string ToString()
-           => $"{CallType}: {AttributeName}";
+           => $"{CallType}: {Name}";
 
         public override void Decompile(CodeBuilder builder)
         {

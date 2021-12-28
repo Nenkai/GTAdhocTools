@@ -30,7 +30,7 @@ namespace GTAdhocTools
                         Console.WriteLine($"Errored while reading: {e.Message}");
                     }
 
-                    adc.Disassemble(Path.ChangeExtension(args[0], ".ad"), withOffset);
+                    adc.Disassemble(Path.ChangeExtension(args[0], ".ad.diss"), withOffset);
 
                     if (adc.Version == 12)
                         adc.PrintStrings(Path.ChangeExtension(args[0], ".strings"));
