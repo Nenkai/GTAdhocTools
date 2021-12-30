@@ -44,7 +44,21 @@ namespace GTAdhocTools.Instructions
                 }
             }
 
-            sb.AppendLine(")");
+            sb.Append(")");
+
+            if (Code.FunctionConstArguments.Count != 0)
+            {
+                sb.Append("[");
+                for (int i = 0; i < Code.FunctionConstArguments.Count; i++)
+                {
+                    sb.Append(Code.FunctionConstArguments[i].Item1).Append($"[{Code.FunctionConstArguments[i].Item2}]");
+                    if (i != Code.FunctionConstArguments.Count - 1)
+                        sb.Append(", ");
+                }
+                sb.Append("]");
+            }
+
+            sb.AppendLine();
 
             sb.Append("  > Instruction Count: ").Append(Code.InstructionCount).Append(" (").Append(Code.InstructionCountOffset.ToString("X2")).Append(')').AppendLine();
             sb.Append($"  > Stack Size: {Code.StackSize} - Variable Heap Size: {Code.VariableHeapSize} - Variable Heap Size Static: {(Code.CodeVersion < 10 ? "=Variable Heap Size" : $"{Code.VariableHeapStaticSize}")}");

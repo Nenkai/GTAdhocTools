@@ -24,7 +24,7 @@ namespace GTAdhocTools
         /// The first argument is always "self", if declaring a class method.
         /// </summary>
         public List<(string argumentName, uint argumentIndex)> Arguments = new List<(string, uint)>();
-        public List<(string argumentName, uint argumentIndex)> FunctionConstArguments = new List<(string, uint)>();
+        public List<(string argumentName, int argumentIndex)> FunctionConstArguments = new List<(string, int)>();
 
         /// <summary>
         /// Source File Name & Line Numbers
@@ -92,7 +92,7 @@ namespace GTAdhocTools
                     for (int i = 0; i < funcArgs; i++)
                     {
                         string argName = Utils.ReadADCString(parent, ref sr);
-                        FunctionConstArguments.Add((argName, sr.ReadUInt32()));
+                        FunctionConstArguments.Add((argName, sr.ReadInt32()));
                     }
                 }
 
@@ -148,9 +148,10 @@ namespace GTAdhocTools
             {
                 case AdhocCallType.MODULE_DEFINE:
                     return new OpModule();
+                case AdhocCallType.FUNCTION_CONST:
+                    return new OpMethod(type);
                 case AdhocCallType.METHOD_DEFINE:
                 case AdhocCallType.FUNCTION_DEFINE:
-                case AdhocCallType.FUNCTION_CONST:
                 case AdhocCallType.METHOD_CONST:
                     return new OpMethod(type);
                 case AdhocCallType.VARIABLE_EVAL:

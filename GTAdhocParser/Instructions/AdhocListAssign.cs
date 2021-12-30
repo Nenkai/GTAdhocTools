@@ -13,24 +13,20 @@ namespace GTAdhocTools.Instructions
         public AdhocCallType CallType { get; set; } = AdhocCallType.LIST_ASSIGN;
         
 
-        public uint Unk { get; set; }
+        public uint ElemCount { get; set; }
+        public bool UnkBool { get; set; }
 
         public override void Deserialize(AdhocFile parent, ref SpanReader sr)
         {
-            Unk = sr.ReadUInt32();
+            ElemCount = sr.ReadUInt32();
             if (parent.Version > 11)
             {
-                sr.ReadByte();
-                /* Wat
-                uVar1 = HStreamReader::ReadByte();
-                uVar2 = ((uVar1 ^ 1) & 0xff) - 1;
-                uVar1 = uVar2 >> 0x3f;
-                *(byte*)(param_1 + 8) = (byte)(uVar2 >> 0x3f);*/
+                UnkBool = sr.ReadBoolean();
             }
         }
 
         public override string ToString()
-           => $"{CallType}: Unk={Unk}";
+           => $"{CallType}: ElemCount={ElemCount}, UnkBool={UnkBool}";
 
         public override void Decompile(CodeBuilder builder)
         {

@@ -23,7 +23,7 @@ namespace GTAdhocTools.Instructions
         }
 
         public override string ToString()
-           => $"{CallType}: Unused:{val1}, RewindTo:{StackRewindIndex}";
+           => $"{CallType}: Unused:{val1}, SetHeapSize:{StackRewindIndex}";
 
         public override void Decompile(CodeBuilder builder)
         {
