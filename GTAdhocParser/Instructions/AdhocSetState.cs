@@ -13,18 +13,42 @@ namespace GTAdhocTools.Instructions
         public AdhocCallType CallType { get; set; } = AdhocCallType.SET_STATE;
         
 
-        public byte State { get; set; }
+        public AdhocRunState State { get; set; }
         public override void Deserialize(AdhocFile parent, ref SpanReader sr)
         {
-            State = sr.ReadByte();
+            State = (AdhocRunState)sr.ReadByte();
         }
 
         public override string ToString()
-            => $"{CallType}: State={State}";
+            => $"{CallType}: State={State} ({(byte)State})";
 
         public override void Decompile(CodeBuilder builder)
         {
             throw new NotImplementedException();
+        }
+
+        public enum AdhocRunState : byte
+        {
+            /// <summary>
+            /// Script is terminating
+            /// </summary>
+            EXIT = 0,
+
+            /// <summary>
+            /// Script scope is over
+            /// </summary>
+            RETURN = 1,
+
+            YIELD = 2,
+
+            /// <summary>
+            /// Script exception
+            /// </summary>
+            EXCEPTION = 3,
+
+            CALL = 4,
+
+            RUN = 5,
         }
     }
 }

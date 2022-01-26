@@ -13,14 +13,14 @@ namespace GTAdhocTools.Instructions
         public AdhocCallType CallType { get; set; } = AdhocCallType.UNK_70;
 
 
-        public int Value { get; set; }
+        public int InstructionIndex { get; set; }
         public override void Deserialize(AdhocFile parent, ref SpanReader sr)
         {
-            Value = sr.ReadInt32();
+            InstructionIndex = sr.ReadInt32();
         }
 
         public override string ToString()
-            => $"{CallType}: {Value} (0x{Value:X2})";
+            => $"{CallType}: Jump To {InstructionIndex}";
 
         public override void Decompile(CodeBuilder builder)
         {

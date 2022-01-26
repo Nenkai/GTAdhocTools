@@ -19,7 +19,7 @@ namespace GTAdhocTools.Instructions
         }
 
         public override string ToString()
-            => $"{CallType}: {Names[^1]}";
+            => $"{CallType}: {string.Join(",", Names)}";
 
         public override void Decompile(CodeBuilder builder)
         {

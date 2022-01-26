@@ -22,7 +22,7 @@ namespace GTAdhocTools.Instructions
         }
 
         public override string ToString()
-            => $"{CallType}: {ClassName} extends {ExtendsFrom[^1]}";
+            => $"{CallType}: {ClassName} extends {string.Join(",", ExtendsFrom)}";
 
         public override void Decompile(CodeBuilder builder)
         {

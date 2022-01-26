@@ -21,7 +21,7 @@ namespace GTAdhocTools.Instructions
         }
 
         public override string ToString()
-           => $"{CallType}: Value={Value}";
+           => $"{CallType}: JumpTo={Value}";
 
         public override void Decompile(CodeBuilder builder)
         {

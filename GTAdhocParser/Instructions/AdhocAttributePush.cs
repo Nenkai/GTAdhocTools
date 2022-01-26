@@ -30,7 +30,7 @@ namespace GTAdhocTools.Instructions
         }
 
         public override string ToString()
-           => $"{CallType}: Attributes={string.Join(',', Attributes)}";
+           => $"{CallType}: {string.Join(',', Attributes)}";
 
         public override void Decompile(CodeBuilder builder)
         {

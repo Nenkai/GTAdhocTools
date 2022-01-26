@@ -115,6 +115,9 @@ namespace GTAdhocTools
             
             var d = new CodeBuilder();
 
+            Stack<object> modOrClass = new Stack<object>();
+            modOrClass.Push("TopLevel");
+
             int ifdepth = 0;
             for (var i = 0; i < ParentCode.Components.Count; i++)
             {
@@ -130,15 +133,27 @@ namespace GTAdhocTools
                     sw.Write($"{inst.InstructionOffset - 5,6:X2}|");
                 sw.Write($"{inst.SourceLineNumber,4}|");
                 sw.Write($"{i,3}| "); // Function Instruction Number
-                sw.WriteLine(ParentCode.Components[i]);
+                sw.Write(ParentCode.Components[i]);
 
                 int depth = 0;
                 if (inst is OpMethod method)
-                    DisassembleMethod(sw, method, withOffset, ref depth);
+                {
+                    sw.WriteLine();
+                    DisassembleMethod(sw, method, withOffset, ref depth, ref modOrClass);
+                    continue;
+                }
                 else if (inst is OpJumpIfFalse || inst is OpJumpIfTrue)
                     ifdepth++;
                 else if (inst is OpLeave)
                     ifdepth--;
+                else if (inst is OpModule mod)
+                    modOrClass.Push(mod.Names[^1]);
+                else if (inst is OpClassDefine classDefine)
+                    modOrClass.Push(classDefine.ClassName);
+                else if (inst is OpSetState state && state.State == OpSetState.AdhocRunState.EXIT)
+                    sw.Write($"  [EXIT {modOrClass.Pop()}]");
+
+                sw.WriteLine();
             }
 
             sw.Flush();
@@ -213,7 +228,7 @@ namespace GTAdhocTools
             return buffer.ToArray();
         }
 
-        public void DisassembleMethod(StreamWriter sw, OpMethod method, bool withOffset, ref int depth)
+        public void DisassembleMethod(StreamWriter sw, OpMethod method, bool withOffset, ref int depth, ref Stack<object> modOrClass)
         {
             depth++;
 
@@ -231,15 +246,26 @@ namespace GTAdhocTools
                     sw.Write($"{metInstruction.InstructionOffset - 5,6:X2}|");
                 sw.Write($"{metInstruction.SourceLineNumber,4}|");
                 sw.Write($"{i,3}| "); // Function Instruction Number
-                sw.WriteLine(metInstruction);
+                sw.Write(metInstruction);
 
                 if (metInstruction is OpMethod methodFunction)
-                    DisassembleMethod(sw, methodFunction, withOffset, ref depth);
+                    DisassembleMethod(sw, methodFunction, withOffset, ref depth, ref modOrClass);
                 else if (metInstruction is OpJumpIfFalse || metInstruction is OpJumpIfTrue)
                     ifdepth++;
                 else if (metInstruction is OpLeave)
                     ifdepth--;
+                else if (metInstruction is OpModule mod)
+                    modOrClass.Push(mod.Names[^1]);
+                else if (metInstruction is OpClassDefine classDefine)
+                    modOrClass.Push(classDefine.ClassName);
+                else if (metInstruction is OpSetState state && state.State == OpSetState.AdhocRunState.EXIT)
+                {
+                    sw.Write($"  [EXIT {modOrClass.Pop()}]");
+                }
+
+                sw.WriteLine();
             }
+
 
             depth--;
             sw.WriteLine();

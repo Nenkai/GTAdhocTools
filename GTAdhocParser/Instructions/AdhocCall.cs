@@ -20,7 +20,7 @@ namespace GTAdhocTools.Instructions
         }
 
         public override string ToString()
-           => $"{CallType}: Value={Value}";
+           => $"{CallType}: ArgCount={Value}";
 
         public override void Decompile(CodeBuilder builder)
         {
