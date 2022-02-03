@@ -72,6 +72,9 @@ namespace GTAdhocTools
 
         public static void PackFromFolder(string inputFolder, string outFile)
         {
+            // Relative to absolute
+            inputFolder = Path.GetFullPath(inputFolder);
+
             Console.WriteLine("[:] Packing MPackage..");
 
             var files = Directory.GetFiles(inputFolder, "*", SearchOption.AllDirectories)
@@ -91,16 +94,19 @@ namespace GTAdhocTools
             // Skip toc offset for now
             bs.Position = 0x10;
 
+            var folderNameStart = inputFolder.Length;
+
             List<(int stringOffset, int dataOffset, int compressedSize)> toc = new(files.Length);
             foreach (var file in files)
             {
                 int stringOffset = (int)bs.Position;
                 string fileName = file.Replace('\\', '/'); // Replace to any wanted path separator
-                fileName = fileName.Substring(fileName.IndexOf('/')); // Remove the parent
+                fileName = fileName.Substring(folderNameStart); // Remove the parent
                 if (!fileName.StartsWith('/'))
                     fileName = '/' + fileName; // Ensure it starts with '/'
 
                 fileName = fileName.Replace("gt6", "%P");
+                Console.WriteLine($"[:] Adding {fileName}");
 
                 bs.WriteString(fileName, StringCoding.ZeroTerminated);
                 int entryOffsetPos = (int)bs.Position;
